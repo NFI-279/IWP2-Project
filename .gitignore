@@ -1,0 +1,24 @@
+# Maven
+/target/
+backend/target/
+
+# Logs
+*.log
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE
+.idea/
+*.iml
+.vscode/
+
+# Maven wrapper jar
+.mvn/wrapper/maven-wrapper.jar
+
+# Node (future React)
+node_modules/
+
+# Environment files (future)
+.env
