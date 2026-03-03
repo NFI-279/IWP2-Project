@@ -17,25 +17,39 @@ CREATE TABLE buildings (
   name VARCHAR(100) UNIQUE NOT NULL
 );
 
+CREATE TABLE floors (
+  id SERIAL PRIMARY KEY,
+  name VARCHAR(100) NOT NULL,
+  image_path VARCHAR(255) NOT NULL,
+  building_id INTEGER NOT NULL REFERENCES buildings(id),
+  created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
 CREATE TABLE classrooms (
   id SERIAL PRIMARY KEY,
   name VARCHAR(50) NOT NULL,
   capacity INTEGER NOT NULL CHECK (capacity > 0),
-  building_id INTEGER NOT NULL REFERENCES buildings(id),
-  UNIQUE (name, building_id)
+  floor_id INTEGER NOT NULL REFERENCES floors(id),
+
+  top_left_x DOUBLE PRECISION NOT NULL,
+  top_left_y DOUBLE PRECISION NOT NULL,
+  bottom_right_x DOUBLE PRECISION NOT NULL,
+  bottom_right_y DOUBLE PRECISION NOT NULL,
+
+  UNIQUE (name, floor_id)
 );
 
 CREATE TABLE reservations (
   id SERIAL PRIMARY KEY,
   teacher_id INTEGER NOT NULL REFERENCES users(id),
   classroom_id INTEGER NOT NULL REFERENCES classrooms(id),
-  week_number INTEGER NOT NULL CHECK (week_number >= 1 AND week_number <= 53),
-  day_of_week INTEGER NOT NULL CHECK (day_of_week >= 1 AND day_of_week <= 7),
-  time_slot INTEGER NOT NULL CHECK (time_slot >= 1 AND time_slot <= 12),
+  week_number INTEGER NOT NULL CHECK (week_number BETWEEN 1 AND 53),
+  day_of_week INTEGER NOT NULL CHECK (day_of_week BETWEEN 1 AND 7),
+  time_slot INTEGER NOT NULL CHECK (time_slot BETWEEN 1 AND 12),
   created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
   UNIQUE (classroom_id, week_number, day_of_week, time_slot),
   UNIQUE (teacher_id, week_number, day_of_week, time_slot)
 );
 
--- seed roles
 INSERT INTO roles (name) VALUES ('STUDENT'), ('TEACHER'), ('ADMIN');
