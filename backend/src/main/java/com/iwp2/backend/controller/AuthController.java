@@ -2,7 +2,7 @@ package com.iwp2.backend.controller;
 
 import com.iwp2.backend.dto.LoginRequest;
 import com.iwp2.backend.dto.RegisterRequest;
-import com.iwp2.backend.dto.UserResponse;
+//import com.iwp2.backend.dto.UserResponse;
 import com.iwp2.backend.service.AuthService;
 
 import org.springframework.web.bind.annotation.*;
@@ -58,21 +58,21 @@ public class AuthController {
 		return "Login successful";
 	}
 
-	@GetMapping("/me")
-	public UserResponse me(Authentication authentication) {
+	// @GetMapping("/me")
+	// public UserResponse me(Authentication authentication) {
 
-		if (authentication == null || !authentication.isAuthenticated()) {
-			throw new RuntimeException("Not authenticated");
-		}
+	// if (authentication == null || !authentication.isAuthenticated()) {
+	// throw new RuntimeException("Not authenticated");
+	// }
 
-		String email = authentication.getName();
+	// String email = authentication.getName();
 
-		String role = authentication.getAuthorities()
-				.stream()
-				.findFirst()
-				.map(a -> a.getAuthority().replace("ROLE_", ""))
-				.orElse("UNKNOWN");
+	// String role = authentication.getAuthorities()
+	// .stream()
+	// .findFirst()
+	// .map(a -> a.getAuthority().replace("ROLE_", ""))
+	// .orElse("UNKNOWN");
 
-		return new UserResponse(email, role);
-	}
+	// return new UserResponse(email, role);
+	// }
 }
