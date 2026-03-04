@@ -1,7 +1,9 @@
 package com.iwp2.backend.service;
 
 import com.iwp2.backend.dto.ReservationRequest;
+import com.iwp2.backend.dto.ReservationResponse;
 import com.iwp2.backend.entity.*;
+import com.iwp2.backend.model.Day;
 import com.iwp2.backend.repository.*;
 
 import org.springframework.stereotype.Service;
@@ -33,11 +35,21 @@ public class ReservationService {
 		Classroom classroom = classroomRepository.findById(request.getClassroomId())
 				.orElseThrow(() -> new RuntimeException("Classroom not found"));
 
+		if (request.getDayOfWeek() < 1 || request.getDayOfWeek() > 7) {
+			throw new RuntimeException("Invalid day");
+		}
+
+		if (request.getTimeSlot() < 1 || request.getTimeSlot() > 6) {
+			throw new RuntimeException("Invalid slot");
+		}
+
+		Day day = Day.fromValue(request.getDayOfWeek());
+
 		Reservation reservation = new Reservation();
 		reservation.setTeacher(teacher);
 		reservation.setClassroom(classroom);
 		reservation.setWeekNumber(request.getWeekNumber());
-		reservation.setDayOfWeek(request.getDayOfWeek());
+		reservation.setDay(day);
 		reservation.setTimeSlot(request.getTimeSlot());
 
 		return reservationRepository.save(reservation);
@@ -63,11 +75,38 @@ public class ReservationService {
 		reservationRepository.delete(reservation);
 	}
 
-	public List<Reservation> getAllReservations() {
-		return reservationRepository.findAll();
+	public List<ReservationResponse> getAllReservations() {
+
+		return reservationRepository.findAll()
+				.stream()
+				.map(ReservationResponse::new)
+				.toList();
 	}
 
-	public List<Reservation> getReservationsForTeacher(String email) {
-		return reservationRepository.findByTeacher_Email(email);
+	public List<ReservationResponse> getReservationsForTeacher(String email) {
+
+		return reservationRepository.findByTeacher_Email(email)
+				.stream()
+				.map(ReservationResponse::new)
+				.toList();
+	}
+
+	public List<ReservationResponse> getTeacherSchedule(String email, Integer week) {
+
+		return reservationRepository
+				.findByTeacher_EmailAndWeekNumber(email, week)
+				.stream()
+				.map(ReservationResponse::new)
+				.toList();
+	}
+
+	public boolean isSlotAvailable(Long classroomId, Integer week, Day day, Integer slot) {
+
+		return !reservationRepository
+				.existsByClassroom_IdAndWeekNumberAndDayAndTimeSlot(
+						classroomId,
+						week,
+						day,
+						slot);
 	}
 }

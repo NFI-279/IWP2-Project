@@ -44,8 +44,8 @@ CREATE TABLE reservations (
   teacher_id INTEGER NOT NULL REFERENCES users(id),
   classroom_id INTEGER NOT NULL REFERENCES classrooms(id),
   week_number INTEGER NOT NULL CHECK (week_number BETWEEN 1 AND 53),
-  day_of_week INTEGER NOT NULL CHECK (day_of_week BETWEEN 1 AND 7),
-  time_slot INTEGER NOT NULL CHECK (time_slot BETWEEN 1 AND 12),
+  day_of_week VARCHAR(20) NOT NULL,
+  time_slot INTEGER NOT NULL CHECK (time_slot BETWEEN 1 AND 6),
   created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
   UNIQUE (classroom_id, week_number, day_of_week, time_slot),

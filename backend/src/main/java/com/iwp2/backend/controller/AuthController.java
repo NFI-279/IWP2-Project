@@ -2,14 +2,15 @@ package com.iwp2.backend.controller;
 
 import com.iwp2.backend.dto.LoginRequest;
 import com.iwp2.backend.dto.RegisterRequest;
-//import com.iwp2.backend.dto.UserResponse;
-import com.iwp2.backend.service.AuthService;
+import com.iwp2.backend.dto.UserResponse;
+import com.iwp2.backend.entity.User;
+import com.iwp2.backend.repository.UserRepository;
 
+import org.springframework.security.core.Authentication;
+import com.iwp2.backend.service.AuthService;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.security.authentication.*;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 
@@ -19,11 +20,15 @@ public class AuthController {
 
 	private final AuthService authService;
 	private final AuthenticationManager authenticationManager;
+	private final UserRepository userRepository;
 
 	public AuthController(AuthService authService,
-			AuthenticationManager authenticationManager) {
+			AuthenticationManager authenticationManager,
+			UserRepository userRepository) {
+
 		this.authService = authService;
 		this.authenticationManager = authenticationManager;
+		this.userRepository = userRepository;
 	}
 
 	@PostMapping("/register")
@@ -58,21 +63,14 @@ public class AuthController {
 		return "Login successful";
 	}
 
-	// @GetMapping("/me")
-	// public UserResponse me(Authentication authentication) {
+	@GetMapping("/me")
+	public UserResponse me(Authentication authentication) {
 
-	// if (authentication == null || !authentication.isAuthenticated()) {
-	// throw new RuntimeException("Not authenticated");
-	// }
+		String email = authentication.getName();
 
-	// String email = authentication.getName();
+		User user = userRepository.findByEmail(email)
+				.orElseThrow(() -> new RuntimeException("User not found"));
 
-	// String role = authentication.getAuthorities()
-	// .stream()
-	// .findFirst()
-	// .map(a -> a.getAuthority().replace("ROLE_", ""))
-	// .orElse("UNKNOWN");
-
-	// return new UserResponse(email, role);
-	// }
+		return new UserResponse(user);
+	}
 }

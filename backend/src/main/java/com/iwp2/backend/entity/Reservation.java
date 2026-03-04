@@ -1,5 +1,6 @@
 package com.iwp2.backend.entity;
 
+import com.iwp2.backend.model.Day;
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
 
@@ -11,12 +12,10 @@ public class Reservation {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
-	// Teacher who created reservation
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "teacher_id", nullable = false)
 	private User teacher;
 
-	// Reserved classroom
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "classroom_id", nullable = false)
 	private Classroom classroom;
@@ -24,8 +23,9 @@ public class Reservation {
 	@Column(name = "week_number", nullable = false)
 	private Integer weekNumber;
 
+	@Enumerated(EnumType.STRING)
 	@Column(name = "day_of_week", nullable = false)
-	private Integer dayOfWeek;
+	private Day day;
 
 	@Column(name = "time_slot", nullable = false)
 	private Integer timeSlot;
@@ -66,12 +66,12 @@ public class Reservation {
 		this.weekNumber = weekNumber;
 	}
 
-	public Integer getDayOfWeek() {
-		return dayOfWeek;
+	public Day getDay() {
+		return day;
 	}
 
-	public void setDayOfWeek(Integer dayOfWeek) {
-		this.dayOfWeek = dayOfWeek;
+	public void setDay(Day day) {
+		this.day = day;
 	}
 
 	public Integer getTimeSlot() {

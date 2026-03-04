@@ -1,6 +1,7 @@
 package com.iwp2.backend.controller;
 
 import com.iwp2.backend.dto.ReservationRequest;
+import com.iwp2.backend.dto.ReservationResponse;
 import com.iwp2.backend.entity.Reservation;
 import com.iwp2.backend.service.ReservationService;
 
@@ -40,18 +41,7 @@ public class ReservationController {
 
 	@GetMapping
 	@PreAuthorize("hasAnyRole('ADMIN','TEACHER','STUDENT')")
-	public List<Reservation> getAll(Authentication authentication) {
-
-		String role = authentication.getAuthorities()
-				.iterator()
-				.next()
-				.getAuthority();
-
-		if (role.equals("ROLE_TEACHER")) {
-			return reservationService
-					.getReservationsForTeacher(authentication.getName());
-		}
-
+	public List<ReservationResponse> getReservations() {
 		return reservationService.getAllReservations();
 	}
 }

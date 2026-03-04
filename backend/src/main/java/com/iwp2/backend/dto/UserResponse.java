@@ -1,13 +1,27 @@
 package com.iwp2.backend.dto;
 
+import com.iwp2.backend.entity.User;
+
 public class UserResponse {
 
+	private Long id;
+	private String name;
 	private String email;
 	private String role;
 
-	public UserResponse(String email, String role) {
-		this.email = email;
-		this.role = role;
+	public UserResponse(User user) {
+		this.id = user.getId();
+		this.name = user.getName();
+		this.email = user.getEmail();
+		this.role = user.getRole().getName();
+	}
+
+	public Long getId() {
+		return id;
+	}
+
+	public String getName() {
+		return name;
 	}
 
 	public String getEmail() {
