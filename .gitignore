@@ -17,8 +17,17 @@ Thumbs.db
 # Maven wrapper jar
 .mvn/wrapper/maven-wrapper.jar
 
-# Node (future React)
+# Node / React
 node_modules/
+dist/
+build/
+.vite/
 
-# Environment files (future)
+# npm logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Environment files
 .env
+.env.local
