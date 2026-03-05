@@ -46,13 +46,14 @@ public class ScheduleService {
 				}
 
 				if (reservation == null) {
-					slots.add(new SlotSchedule(slot, false, null));
+					slots.add(new SlotSchedule(slot, false, null, null));
 				} else {
 					slots.add(
 							new SlotSchedule(
 									slot,
 									true,
-									reservation.getTeacher().getEmail()));
+									reservation.getTeacher().getEmail(),
+									reservation.getId()));
 				}
 			}
 
