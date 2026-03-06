@@ -14,24 +14,29 @@ import java.util.List;
 @Setter
 public class Floor {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Long id;
 
-    @Column(nullable = false)
-    private String name;
+	@Column(nullable = false)
+	private String name;
 
-    @Column(name = "image_path", nullable = false)
-    private String imagePath;
+	@Column(name = "image_path", nullable = false)
+	private String imagePath;
 
-    @Column(name = "created_at")
-    private LocalDateTime createdAt;
+	@Column(name = "created_at")
+	private LocalDateTime createdAt;
 
-    @ManyToOne
-    @JoinColumn(name = "building_id", nullable = false)
-    @JsonIgnore
-    private Building building;
+	@ManyToOne
+	@JoinColumn(name = "building_id", nullable = false)
+	@JsonIgnore
+	private Building building;
 
-    @OneToMany(mappedBy = "floor", cascade = CascadeType.ALL)
-    private List<Classroom> classrooms;
+	@OneToMany(mappedBy = "floor", cascade = CascadeType.ALL)
+	private List<Classroom> classrooms;
+
+	@PrePersist
+	public void prePersist() {
+		createdAt = LocalDateTime.now();
+	}
 }
