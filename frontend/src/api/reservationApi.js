@@ -8,3 +8,8 @@ export async function createReservation(data) {
 export async function deleteReservation(id) {
   await api.delete(`/reservations/${id}`);
 }
+
+export const getMyReservations = async () => {
+    const res = await api.get("/reservations/my");
+    return res.data;
+};

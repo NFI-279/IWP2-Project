@@ -6,6 +6,7 @@ import DashboardPage from "./pages/DashboardPage";
 import BuildingPage from "./pages/BuildingPage";
 import FloorPage from "./pages/FloorPage";
 import ClassroomPage from "./pages/ClassroomPage";
+import MyReservationsPage from "./pages/MyReservationsPage";
 
 import AdminLayout from "./pages/admin/AdminLayout";
 import AdminDashboardPage from "./pages/admin/AdminDashboardPage";
@@ -72,6 +73,9 @@ function App() {
 					<Route path="layout/:floorId" element={<AdminLayoutEditorPage />} />
 					<Route path="analytics" element={<AdminAnalyticsPage />} />
 				</Route>
+
+				<Route path="/my-reservations" element={<MyReservationsPage />} />
+
 			</Routes>
 		</BrowserRouter>
 	);

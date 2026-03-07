@@ -44,4 +44,12 @@ public class ReservationController {
 	public List<ReservationResponse> getReservations() {
 		return reservationService.getAllReservations();
 	}
+
+	@GetMapping("/my")
+	public List<ReservationResponse> getMyReservations(Authentication auth) {
+
+		String email = auth.getName();
+
+		return reservationService.getReservationsForTeacher(email);
+	}
 }

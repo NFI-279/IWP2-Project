@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { getClassroomSchedule } from "../api/scheduleApi";
 import { createReservation, deleteReservation } from "../api/reservationApi";
 import { useAuth } from "../context/AuthContext";
+import Navbar from "../components/Navbar";
 
 const days = ["MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY", "SATURDAY", "SUNDAY"];
 
@@ -18,6 +19,7 @@ const slotTimes = {
 function ClassroomPage() {
 
 	const { classroomId } = useParams();
+	const navigate = useNavigate();
 
 	const [schedule, setSchedule] = useState({});
 	const [week, setWeek] = useState(10);
@@ -30,7 +32,7 @@ function ClassroomPage() {
 
 		const interval = setInterval(() => {
 			loadSchedule();
-		}, 5000); // every 5 seconds
+		}, 5000);
 
 		return () => clearInterval(interval);
 
@@ -60,9 +62,7 @@ function ClassroomPage() {
 			return;
 		}
 
-		const confirmBooking = confirm(
-			`Reserve classroom for ${day} slot ${slot}?`
-		);
+		const confirmBooking = confirm(`Reserve classroom for ${day} slot ${slot}?`);
 
 		if (!confirmBooking) return;
 
@@ -93,7 +93,6 @@ function ClassroomPage() {
 		try {
 
 			await deleteReservation(reservationId);
-
 			loadSchedule();
 
 		} catch (err) {
@@ -103,92 +102,109 @@ function ClassroomPage() {
 
 	};
 
-
 	return (
-		<div className="container mt-5">
 
-			<h2 className="mb-4">Classroom Schedule</h2>
+		<>
 
-			<div className="mb-3">
-				Week:
-				<input
-					type="number"
-					value={week}
-					min="1"
-					max="53"
-					onChange={e => setWeek(e.target.value)}
-				/>
+			<Navbar />
+
+			<div className="container mt-5">
+
+				<button
+					className="btn btn-secondary mb-3"
+					onClick={() => navigate(-1)}
+				>
+					← Back
+				</button>
+
+				<h2 className="mb-4">Classroom Schedule</h2>
+
+				<div className="mb-3">
+					Week:
+					<input
+						type="number"
+						value={week}
+						min="1"
+						max="53"
+						onChange={e => setWeek(e.target.value)}
+					/>
+				</div>
+
+				<table className="table table-bordered text-center">
+
+					<thead>
+						<tr>
+							<th>Slot</th>
+							{days.map(day => (
+								<th key={day}>{day}</th>
+							))}
+						</tr>
+					</thead>
+
+					<tbody>
+
+						{[1, 2, 3, 4, 5, 6].map(slot => (
+
+							<tr key={slot}>
+
+								<td>
+									<div>Slot {slot}</div>
+									<small>{slotTimes[slot]}</small>
+								</td>
+
+								{days.map(day => {
+
+									const cell = getSlot(day, slot);
+									const reserved = cell?.reserved;
+									const isMine = cell?.teacherName === user.email;
+
+									return (
+
+										<td
+											key={day}
+											onClick={() => {
+
+												if (!reserved) {
+													handleSlotClick(day, slot, reserved);
+												}
+
+												if (reserved && isMine) {
+													handleCancel(cell.reservationId);
+												}
+
+											}}
+											title={
+												reserved
+													? `Reserved by: ${cell.teacherName}\nWeek: ${week}\nTime: ${slotTimes[slot]}`
+													: "Available"
+											}
+											style={{
+												backgroundColor:
+													reserved
+														? isMine
+															? "#99ccff"
+															: "#ffcccc"
+														: "#ccffcc",
+												cursor: "pointer"
+											}}
+										></td>
+
+									);
+
+								})}
+
+							</tr>
+
+						))}
+
+					</tbody>
+
+				</table>
+
 			</div>
 
-			<table className="table table-bordered text-center">
+		</>
 
-				<thead>
-					<tr>
-						<th>Slot</th>
-						{days.map(day => (
-							<th key={day}>{day}</th>
-						))}
-					</tr>
-				</thead>
-
-				<tbody>
-
-					{[1, 2, 3, 4, 5, 6].map(slot => (
-
-						<tr key={slot}>
-
-							<td>
-								<div>Slot {slot}</div>
-								<small>{slotTimes[slot]}</small>
-							</td>
-
-							{days.map(day => {
-
-								const cell = getSlot(day, slot);
-								const reserved = cell?.reserved;
-								const isMine = cell?.teacherName === user.email;
-
-								return (
-									<td
-										key={day}
-										onClick={() => {
-											if (!reserved) {
-												handleSlotClick(day, slot, reserved);
-											}
-											if (reserved && isMine) {
-												console.log(cell);
-												handleCancel(cell.reservationId);
-											}
-
-										}}
-										title={
-											reserved
-												? `Reserved by: ${cell.teacherName}\nWeek: ${week}\nTime: ${slotTimes[slot]}`
-												: "Available"
-										}
-										style={{
-											backgroundColor:
-												reserved
-													? isMine
-														? "#99ccff"
-														: "#ffcccc"
-													: "#ccffcc",
-											cursor: "pointer"
-										}}
-									></td>
-								);
-
-							})}
-
-						</tr>
-
-					))}
-
-				</tbody>
-
-			</table>
-
-		</div>
 	);
 
 }
