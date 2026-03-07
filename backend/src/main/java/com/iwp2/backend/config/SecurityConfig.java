@@ -36,7 +36,7 @@ public class SecurityConfig {
 				.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED))
 				.authorizeHttpRequests(auth -> auth
 						.requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-						.requestMatchers("/auth/login", "/auth/register").permitAll()
+						.requestMatchers("/auth/login", "/auth/register", "/uploads/**").permitAll()
 						.requestMatchers("/admin/**").hasRole("ADMIN")
 						.requestMatchers("/teacher/**").hasRole("TEACHER")
 						.anyRequest().authenticated())

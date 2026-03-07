@@ -4,7 +4,6 @@ import { getBuildings } from "../api/buildingApi";
 import { useNavigate } from "react-router-dom";
 
 function DashboardPage() {
-
 	const { user, logout } = useAuth();
 	const navigate = useNavigate();
 
@@ -25,12 +24,21 @@ function DashboardPage() {
 
 	return (
 		<div className="container mt-5">
+			<div className="d-flex justify-content-between align-items-center mb-4">
+				<h2 className="mb-0">Campus Buildings</h2>
 
-			<div className="d-flex justify-content-between mb-4">
-				<h2>Campus Buildings</h2>
+				<div className="d-flex align-items-center">
+					{user.role === "ADMIN" && (
+						<button
+							className="btn btn-primary btn-sm me-3"
+							onClick={() => navigate("/admin")}
+						>
+							Admin Panel
+						</button>
+					)}
 
-				<div>
 					<span className="me-3">{user.email}</span>
+
 					<button className="btn btn-danger btn-sm" onClick={logout}>
 						Logout
 					</button>
@@ -56,7 +64,7 @@ function DashboardPage() {
 								</h5>
 
 								<p className="card-text">
-									Floors: {building.floors.length}
+									Floors: {building.floors?.length ?? 0}
 								</p>
 
 							</div>

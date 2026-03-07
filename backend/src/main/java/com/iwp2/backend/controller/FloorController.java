@@ -7,17 +7,21 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/buildings")
 public class FloorController {
 
-    private final FloorService floorService;
+	private final FloorService floorService;
 
-    public FloorController(FloorService floorService) {
-        this.floorService = floorService;
-    }
+	public FloorController(FloorService floorService) {
+		this.floorService = floorService;
+	}
 
-    @GetMapping("/{buildingId}/floors")
-    public List<Floor> getFloorsByBuilding(@PathVariable Long buildingId) {
-        return floorService.getFloorsByBuilding(buildingId);
-    }
+	@GetMapping("/buildings/{buildingId}/floors")
+	public List<Floor> getFloorsByBuilding(@PathVariable Long buildingId) {
+		return floorService.getFloorsByBuilding(buildingId);
+	}
+
+	@GetMapping("/floors/{id}")
+	public Floor getFloor(@PathVariable Long id) {
+		return floorService.getFloor(id);
+	}
 }

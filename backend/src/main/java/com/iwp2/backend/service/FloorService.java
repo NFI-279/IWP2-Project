@@ -36,4 +36,9 @@ public class FloorService {
 	public void deleteFloor(Long id) {
 		floorRepository.deleteById(id);
 	}
+
+	public Floor getFloor(Long id) {
+		return floorRepository.findById(id)
+				.orElseThrow(() -> new RuntimeException("Floor not found"));
+	}
 }

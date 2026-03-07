@@ -31,3 +31,6 @@ yarn-error.log*
 # Environment files
 .env
 .env.local
+
+# uploaded floor maps
+uploads/
