@@ -2,6 +2,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 
 import ProtectedRoute from "./routes/ProtectedRoute";
 import LoginPage from "./pages/LoginPage";
+import RegisterPage from "./pages/RegisterPage";
 import DashboardPage from "./pages/DashboardPage";
 import BuildingPage from "./pages/BuildingPage";
 import FloorPage from "./pages/FloorPage";
@@ -9,7 +10,6 @@ import ClassroomPage from "./pages/ClassroomPage";
 import MyReservationsPage from "./pages/MyReservationsPage";
 
 import AdminLayout from "./pages/admin/AdminLayout";
-import AdminDashboardPage from "./pages/admin/AdminDashboardPage";
 import AdminBuildingPage from "./pages/admin/AdminBuildingPage";
 import AdminFloorPage from "./pages/admin/AdminFloorPage";
 import AdminClassroomPage from "./pages/admin/AdminClassroomPage";
@@ -21,6 +21,8 @@ function App() {
 		<BrowserRouter>
 			<Routes>
 				<Route path="/login" element={<LoginPage />} />
+
+				<Route path="/register" element={<RegisterPage />} />
 
 				<Route
 					path="/"
@@ -66,7 +68,6 @@ function App() {
 						</ProtectedRoute>
 					}
 				>
-					<Route index element={<AdminDashboardPage />} />
 					<Route path="building" element={<AdminBuildingPage />} />
 					<Route path="floor/:buildingId" element={<AdminFloorPage />} />
 					<Route path="classroom/:floorId" element={<AdminClassroomPage />} />

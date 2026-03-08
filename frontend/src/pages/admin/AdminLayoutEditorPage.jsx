@@ -7,6 +7,7 @@ import {
 	deleteClassroom
 } from "../../api/adminApi";
 import { getFloor } from "../../api/floorApi";
+import { useNavigate } from "react-router-dom";
 
 function AdminLayoutEditorPage() {
 
@@ -22,6 +23,8 @@ function AdminLayoutEditorPage() {
 	const [rect, setRect] = useState(null);
 
 	const [draggingRoom, setDraggingRoom] = useState(null);
+
+	const navigate = useNavigate();
 
 	useEffect(() => {
 		loadFloor();
@@ -207,7 +210,12 @@ function AdminLayoutEditorPage() {
 	return (
 
 		<div className="container mt-4">
-
+			<button
+				className="btn btn-secondary mb-3"
+				onClick={() => navigate(-1)}
+			>
+				← Back
+			</button>
 			<h2>Layout Editor</h2>
 
 			<div

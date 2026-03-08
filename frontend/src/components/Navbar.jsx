@@ -34,9 +34,15 @@ function Navbar() {
 					)}
 
 					{user?.role === "ADMIN" && (
-						<Link className="nav-link" to="/admin">
-							Admin
-						</Link>
+						<>
+							<Link className="nav-link" to="/admin/building">
+								Manage Buildings
+							</Link>
+
+							<Link className="nav-link" to="/admin/analytics">
+								Reservation Analytics
+							</Link>
+						</>
 					)}
 
 				</div>

@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { getClassrooms } from "../../api/classroomApi";
 import { createClassroom, deleteClassroom } from "../../api/adminApi";
+import { useNavigate } from "react-router-dom";
 
 function AdminClassroomPage() {
 
@@ -11,6 +12,8 @@ function AdminClassroomPage() {
 
 	const [name, setName] = useState("");
 	const [capacity, setCapacity] = useState("");
+
+	const navigate = useNavigate();
 
 	useEffect(() => {
 		loadClassrooms();
@@ -46,7 +49,12 @@ function AdminClassroomPage() {
 	return (
 
 		<div>
-
+			<button
+				className="btn btn-secondary mb-3"
+				onClick={() => navigate(-1)}
+			>
+				← Back
+			</button>
 			<h2 className="mb-4">Classrooms</h2>
 
 			<div className="card p-3 mb-4">

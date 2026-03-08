@@ -70,6 +70,12 @@ function AdminFloorPage() {
 
 	return (
 		<div className="container mt-5">
+			<button
+				className="btn btn-secondary mb-3"
+				onClick={() => navigate(-1)}
+			>
+				← Back
+			</button>
 			<h2 className="mb-4">Admin — Floors</h2>
 
 			<div className="card p-3 mb-4">

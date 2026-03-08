@@ -4,53 +4,66 @@ import { useNavigate } from "react-router-dom";
 
 function LoginPage() {
 
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+	const [email, setEmail] = useState("");
+	const [password, setPassword] = useState("");
 
-  const { login } = useAuth();
-  const navigate = useNavigate();
+	const { login } = useAuth();
+	const navigate = useNavigate();
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+	const handleSubmit = async (e) => {
 
-    try {
-      await login(email, password);
-      navigate("/");
-    } catch {
-      alert("Login failed");
-    }
-  };
+		e.preventDefault();
 
-  return (
-    <div className="container mt-5">
+		try {
 
-      <h2>Login</h2>
+			await login(email, password);
+			navigate("/");
 
-      <form onSubmit={handleSubmit}>
+		} catch {
 
-        <input
-          className="form-control mb-3"
-          placeholder="Email"
-          value={email}
-          onChange={e => setEmail(e.target.value)}
-        />
+			alert("Login failed");
 
-        <input
-          type="password"
-          className="form-control mb-3"
-          placeholder="Password"
-          value={password}
-          onChange={e => setPassword(e.target.value)}
-        />
+		}
 
-        <button className="btn btn-primary">
-          Login
-        </button>
+	};
 
-      </form>
+	return (
 
-    </div>
-  );
+		<div className="container mt-5">
+
+			<h2>Login</h2>
+
+			<form onSubmit={handleSubmit}>
+
+				<input
+					className="form-control mb-3"
+					placeholder="Email"
+					value={email}
+					onChange={e => setEmail(e.target.value)}
+				/>
+
+				<input
+					type="password"
+					className="form-control mb-3"
+					placeholder="Password"
+					value={password}
+					onChange={e => setPassword(e.target.value)}
+				/>
+
+				<button className="btn btn-primary">
+					Login
+				</button>
+
+			</form>
+
+			<p className="mt-3">
+				Don't have an account? <a href="/register">Register</a>
+			</p>
+
+		</div>
+
+	);
+
 }
 
 export default LoginPage;

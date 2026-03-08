@@ -58,6 +58,12 @@ function AdminBuildingPage() {
 
 	return (
 		<div className="container mt-5">
+			<button
+				className="btn btn-secondary mb-3"
+				onClick={() => navigate(-1)}
+			>
+				← Back
+			</button>
 			<h2 className="mb-4">Admin — Buildings</h2>
 
 			<div className="mb-4">

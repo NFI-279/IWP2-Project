@@ -3,6 +3,7 @@ import api from "../../api/apiClient";
 import {
 	Bar
 } from "react-chartjs-2";
+import { useNavigate } from "react-router-dom";
 
 import {
 	Chart as ChartJS,
@@ -26,6 +27,8 @@ ChartJS.register(
 function AdminAnalyticsPage() {
 
 	const [data, setData] = useState([]);
+
+	const navigate = useNavigate();
 
 	useEffect(() => {
 		load();
@@ -65,7 +68,12 @@ function AdminAnalyticsPage() {
 	return (
 
 		<div>
-
+			<button
+				className="btn btn-secondary mb-3"
+				onClick={() => navigate(-1)}
+			>
+				← Back
+			</button>
 			<h2 className="mb-4">Reservation Analytics</h2>
 
 			<Bar data={data} />
