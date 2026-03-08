@@ -14,5 +14,25 @@ services:
       - pgdata:/var/lib/postgresql/data
       - ./db/init.sql:/docker-entrypoint-initdb.d/01_init.sql
 
+  backend:
+    build: ./backend
+    container_name: iwp2_backend
+    depends_on:
+      - db
+    ports:
+      - "8081:8081"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/campus_db
+      SPRING_DATASOURCE_USERNAME: campus_user
+      SPRING_DATASOURCE_PASSWORD: campus_pass
+
+  frontend:
+    build: ./frontend
+    container_name: iwp2_frontend
+    depends_on:
+      - backend
+    ports:
+      - "5173:5173"
+
 volumes:
   pgdata:

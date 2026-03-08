@@ -61,6 +61,28 @@ function AdminLayoutEditorPage() {
 
 	};
 
+	const overlaps = (a, b) => {
+
+		return (
+			a.topLeftX < b.bottomRightX &&
+			a.bottomRightX > b.topLeftX &&
+			a.topLeftY < b.bottomRightY &&
+			a.bottomRightY > b.topLeftY
+		);
+
+	};
+
+	const insideBounds = (room) => {
+
+		return (
+			room.topLeftX >= 0 &&
+			room.topLeftY >= 0 &&
+			room.bottomRightX <= 100 &&
+			room.bottomRightY <= 100
+		);
+
+	};
+
 	const handleMouseDown = (e) => {
 
 		if (draggingRoom) return;
@@ -104,28 +126,34 @@ function AdminLayoutEditorPage() {
 
 		const room = draggingRoom.room;
 
+		const movedRoom = {
+			...room,
+			topLeftX: room.topLeftX + dx,
+			topLeftY: room.topLeftY + dy,
+			bottomRightX: room.bottomRightX + dx,
+			bottomRightY: room.bottomRightY + dy
+		};
+
+		if (!insideBounds(movedRoom)) return;
+
+		for (const r of classrooms) {
+
+			if (r.id !== room.id && overlaps(movedRoom, r)) {
+
+				return;
+
+			}
+
+		}
+
 		setClassrooms(prev =>
 			prev.map(r =>
-				r.id === room.id
-					? {
-						...r,
-						topLeftX: r.topLeftX + dx,
-						topLeftY: r.topLeftY + dy,
-						bottomRightX: r.bottomRightX + dx,
-						bottomRightY: r.bottomRightY + dy
-					}
-					: r
+				r.id === room.id ? movedRoom : r
 			)
 		);
 
 		setDraggingRoom({
-			room: {
-				...room,
-				topLeftX: room.topLeftX + dx,
-				topLeftY: room.topLeftY + dy,
-				bottomRightX: room.bottomRightX + dx,
-				bottomRightY: room.bottomRightY + dy
-			},
+			room: movedRoom,
 			startX: e.clientX,
 			startY: e.clientY
 		});
@@ -171,17 +199,42 @@ function AdminLayoutEditorPage() {
 
 		}
 
+		const newRoom = {
+			name,
+			capacity: Number(capacity),
+			topLeftX: Math.min(rect.x1, rect.x2),
+			topLeftY: Math.min(rect.y1, rect.y2),
+			bottomRightX: Math.max(rect.x1, rect.x2),
+			bottomRightY: Math.max(rect.y1, rect.y2)
+		};
+
+		if (!insideBounds(newRoom)) {
+
+			alert("Classroom must stay inside the floor image");
+
+			setDrawing(false);
+			setRect(null);
+			return;
+
+		}
+
+		for (const room of classrooms) {
+
+			if (overlaps(newRoom, room)) {
+
+				alert("Classroom overlaps with another classroom");
+
+				setDrawing(false);
+				setRect(null);
+				return;
+
+			}
+
+		}
+
 		try {
 
-			await createClassroom(floorId, {
-				name,
-				capacity: Number(capacity),
-				topLeftX: Math.min(rect.x1, rect.x2),
-				topLeftY: Math.min(rect.y1, rect.y2),
-				bottomRightX: Math.max(rect.x1, rect.x2),
-				bottomRightY: Math.max(rect.y1, rect.y2)
-			});
-
+			await createClassroom(floorId, newRoom);
 			loadClassrooms();
 
 		} catch (err) {

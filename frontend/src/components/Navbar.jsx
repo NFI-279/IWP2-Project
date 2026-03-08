@@ -45,6 +45,10 @@ function Navbar() {
 						</>
 					)}
 
+					<Link className="nav-link" to="/profile">
+						Profile
+					</Link>
+
 				</div>
 
 				<div className="d-flex align-items-center">

@@ -8,6 +8,7 @@ import BuildingPage from "./pages/BuildingPage";
 import FloorPage from "./pages/FloorPage";
 import ClassroomPage from "./pages/ClassroomPage";
 import MyReservationsPage from "./pages/MyReservationsPage";
+import ProfilePage from "./pages/ProfilePage";
 
 import AdminLayout from "./pages/admin/AdminLayout";
 import AdminBuildingPage from "./pages/admin/AdminBuildingPage";
@@ -76,6 +77,8 @@ function App() {
 				</Route>
 
 				<Route path="/my-reservations" element={<MyReservationsPage />} />
+
+				<Route path="/profile" element={<ProfilePage />} />
 
 			</Routes>
 		</BrowserRouter>
