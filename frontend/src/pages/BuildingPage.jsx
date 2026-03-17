@@ -24,42 +24,58 @@ function BuildingPage() {
 	};
 
 	return (
-
 		<>
-
 			<Navbar />
 
-			<div className="container mt-5">
+			<div className="bg-background-light min-h-screen px-6 py-10">
 
-				<button
-					className="btn btn-secondary mb-3"
-					onClick={() => navigate(-1)}
-				>
-					← Back
-				</button>
+				{/* HEADER */}
+				<div className="max-w-7xl mx-auto mb-8">
 
-				<h2 className="mb-4">Floors</h2>
+					<button
+						onClick={() => navigate(-1)}
+						className="mb-6 flex items-center gap-2 text-sm text-muted hover:text-primary transition"
+					>
+						← Back
+					</button>
 
-				<div className="row">
+					<h2 className="text-4xl font-extrabold text-text-main mb-2">
+						Floors
+					</h2>
+
+					<p className="text-muted">
+						Select a floor to view classrooms
+					</p>
+
+				</div>
+
+				{/* GRID */}
+				<div className="max-w-7xl mx-auto grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
 
 					{floors.map((floor) => (
 
-						<div key={floor.id} className="col-md-4 mb-4">
+						<div
+							key={floor.id}
+							onClick={() => navigate(`/floor/${floor.id}`)}
+							className="bg-surface rounded-lg shadow-soft p-6 cursor-pointer transition hover:-translate-y-1 hover:shadow-lg flex items-center justify-between"
+						>
 
-							<div
-								className="card shadow-sm"
-								style={{ cursor: "pointer" }}
-								onClick={() => navigate(`/floor/${floor.id}`)}
-							>
+							{/* LEFT */}
+							<div>
 
-								<div className="card-body">
+								<h3 className="text-lg font-bold text-text-main">
+									{floor.name}
+								</h3>
 
-									<h5 className="card-title">
-										{floor.name}
-									</h5>
+								<p className="text-sm text-muted mt-1">
+									{floor.classrooms?.length ?? 0} classrooms
+								</p>
 
-								</div>
+							</div>
 
+							{/* RIGHT ICON */}
+							<div className="text-muted group-hover:text-primary transition">
+								→
 							</div>
 
 						</div>
@@ -69,9 +85,7 @@ function BuildingPage() {
 				</div>
 
 			</div>
-
 		</>
-
 	);
 }
 

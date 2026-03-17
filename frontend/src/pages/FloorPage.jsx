@@ -36,70 +36,82 @@ function FloorPage() {
 	};
 
 	return (
-
 		<>
-
 			<Navbar />
 
-			<div className="container mt-4">
+			<div className="bg-background-light min-h-screen px-6 py-10">
 
-				<button
-					className="btn btn-secondary mb-3"
-					onClick={() => navigate(-1)}
-				>
-					← Back
-				</button>
+				{/* HEADER */}
+				<div className="max-w-7xl mx-auto mb-6">
 
-				<h2 className="mb-4">Floor Map</h2>
+					<button
+						onClick={() => navigate(-1)}
+						className="mb-6 flex items-center gap-2 text-sm text-muted hover:text-primary transition"
+					>
+						← Back
+					</button>
 
-				<div
-					style={{
-						position: "relative",
-						width: "100%",
-						maxWidth: "900px"
-					}}
-				>
+					<h2 className="text-4xl font-extrabold text-text-main mb-2">
+						Floor Map
+					</h2>
 
-					{floor && (
+					<p className="text-muted">
+						Click on a classroom to view details
+					</p>
 
-						<img
-							src={`http://localhost:8081${floor.imagePath}`}
-							alt="Floor"
-							style={{ width: "100%" }}
-						/>
+				</div>
 
-					)}
+				{/* MAP CONTAINER */}
+				<div className="max-w-5xl mx-auto bg-surface rounded-lg shadow-soft p-4">
 
-					{classrooms.map(room => {
+					<div className="relative w-full">
 
-						const width = room.bottomRightX - room.topLeftX;
-						const height = room.bottomRightY - room.topLeftY;
-
-						return (
-							<div
-								key={room.id}
-								onClick={() => navigate(`/classroom/${room.id}`)}
-								style={{
-									position: "absolute",
-									left: `${room.topLeftX}%`,
-									top: `${room.topLeftY}%`,
-									width: `${width}%`,
-									height: `${height}%`,
-									border: "2px solid red",
-									cursor: "pointer"
-								}}
-								title={room.name}
+						{/* FLOOR IMAGE */}
+						{floor && (
+							<img
+								src={`http://localhost:8081${floor.imagePath}`}
+								alt="Floor"
+								className="w-full rounded-md"
 							/>
-						);
+						)}
 
-					})}
+						{/* CLASSROOM OVERLAYS */}
+						{classrooms.map((room) => {
+
+							const width = room.bottomRightX - room.topLeftX;
+							const height = room.bottomRightY - room.topLeftY;
+
+							return (
+								<div
+									key={room.id}
+									onClick={() => navigate(`/classroom/${room.id}`)}
+									className="absolute group cursor-pointer"
+									style={{
+										left: `${room.topLeftX}%`,
+										top: `${room.topLeftY}%`,
+										width: `${width}%`,
+										height: `${height}%`,
+									}}
+								>
+
+									{/* OVERLAY BOX */}
+									<div className="w-full h-full border-2 border-primary bg-primary/10 group-hover:bg-primary/20 transition rounded-sm" />
+
+									{/* TOOLTIP */}
+									<div className="absolute -top-7 left-1/2 -translate-x-1/2 bg-text-main text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition whitespace-nowrap">
+										{room.name}
+									</div>
+
+								</div>
+							);
+						})}
+
+					</div>
 
 				</div>
 
 			</div>
-
 		</>
-
 	);
 }
 

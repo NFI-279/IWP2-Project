@@ -20,22 +20,16 @@ function ClassroomPage() {
 
 	const { classroomId } = useParams();
 	const navigate = useNavigate();
+	const { user } = useAuth();
 
 	const [schedule, setSchedule] = useState({});
 	const [week, setWeek] = useState(10);
-
-	const { user } = useAuth();
+	const [modal, setModal] = useState(null);
 
 	useEffect(() => {
-
 		loadSchedule();
-
-		const interval = setInterval(() => {
-			loadSchedule();
-		}, 5000);
-
+		const interval = setInterval(loadSchedule, 5000);
 		return () => clearInterval(interval);
-
 	}, [week]);
 
 	const loadSchedule = async () => {
@@ -43,7 +37,7 @@ function ClassroomPage() {
 			const data = await getClassroomSchedule(classroomId, week);
 			setSchedule(data);
 		} catch (err) {
-			console.error("Failed to load schedule", err);
+			console.error(err);
 		}
 	};
 
@@ -53,160 +47,219 @@ function ClassroomPage() {
 		return dayData.slots.find(s => s.slot === slot);
 	};
 
-	const handleSlotClick = async (day, slot, reserved) => {
+	const handleClick = (day, slot, cell) => {
+		const reserved = cell?.reserved === true;
+		const isMine = reserved && cell?.teacherName === user?.email;
 
-		if (reserved) return;
-
-		if (user.role !== "TEACHER") {
-			alert("Only teachers can reserve classrooms");
+		if (!reserved) {
+			setModal({ type: "book", day, slot });
 			return;
 		}
 
-		const confirmBooking = confirm(`Reserve classroom for ${day} slot ${slot}?`);
+		setModal({ type: "info", day, slot, cell, mine: isMine });
+	};
 
-		if (!confirmBooking) return;
-
+	const confirmBooking = async () => {
 		try {
-
 			await createReservation({
 				classroomId: Number(classroomId),
 				weekNumber: Number(week),
-				dayOfWeek: days.indexOf(day) + 1,
-				timeSlot: slot
+				dayOfWeek: days.indexOf(modal.day) + 1,
+				timeSlot: modal.slot
 			});
-
+			setModal(null);
 			loadSchedule();
-
-		} catch (err) {
-			console.error(err);
-			alert(err.response?.data?.message || "Reservation failed");
+		} catch {
+			alert("Reservation failed");
 		}
-
 	};
 
-	const handleCancel = async (reservationId) => {
-
-		const confirmCancel = confirm("Cancel this reservation?");
-
-		if (!confirmCancel) return;
-
+	const cancelBooking = async () => {
 		try {
-
-			await deleteReservation(reservationId);
+			await deleteReservation(modal.cell.reservationId);
+			setModal(null);
 			loadSchedule();
-
-		} catch (err) {
-			console.error(err);
-			alert(err.response?.data?.message || "Failed to cancel reservation");
+		} catch {
+			alert("Cancel failed");
 		}
-
 	};
 
 	return (
-
 		<>
-
 			<Navbar />
 
-			<div className="container mt-5">
+			<div className="bg-gray-50 min-h-screen px-6 py-10">
 
-				<button
-					className="btn btn-secondary mb-3"
-					onClick={() => navigate(-1)}
-				>
-					← Back
-				</button>
+				<div className="max-w-7xl mx-auto mb-6">
+					<button onClick={() => navigate(-1)} className="text-gray-500 mb-4">
+						← Back
+					</button>
 
-				<h2 className="mb-4">Classroom Schedule</h2>
-
-				<div className="mb-3">
-					Week:
-					<input
-						type="number"
-						value={week}
-						min="1"
-						max="53"
-						onChange={e => setWeek(e.target.value)}
-					/>
+					<h2 className="text-3xl font-extrabold text-gray-900">
+						Classroom Schedule
+					</h2>
 				</div>
 
-				<table className="table table-bordered text-center">
+				<div className="max-w-7xl mx-auto bg-white rounded-xl shadow-lg p-6">
 
-					<thead>
-						<tr>
-							<th>Slot</th>
-							{days.map(day => (
-								<th key={day}>{day}</th>
-							))}
-						</tr>
-					</thead>
+					<div className="grid grid-cols-[80px_repeat(7,1fr)] gap-3">
 
-					<tbody>
+						<div></div>
+						{days.map(day => (
+							<div key={day} className="text-center font-bold text-gray-800">
+								{day.slice(0, 3)}
+							</div>
+						))}
 
 						{[1, 2, 3, 4, 5, 6].map(slot => (
-
-							<tr key={slot}>
-
-								<td>
-									<div>Slot {slot}</div>
-									<small>{slotTimes[slot]}</small>
-								</td>
+							<>
+								<div className="text-right text-sm text-gray-400 pr-2">
+									{slotTimes[slot]}
+								</div>
 
 								{days.map(day => {
 
 									const cell = getSlot(day, slot);
-									const reserved = cell?.reserved;
-									const isMine = cell?.teacherName === user.email;
+									const reserved = cell?.reserved === true;
+									const isMine = reserved && cell?.teacherName === user?.email;
+
+									let classes = "h-24 rounded-xl flex items-center justify-center transition";
+
+									if (!reserved) {
+										classes += " border-2 border-dashed border-gray-300 hover:border-red-400 hover:bg-red-50 cursor-pointer";
+									}
+									else if (isMine) {
+										classes += " bg-red-500 text-white shadow-md cursor-pointer";
+									} else {
+										classes += " bg-red-100 border border-red-200 text-red-400";
+									}
 
 									return (
-
-										<td
+										<div
 											key={day}
-											onClick={() => {
+											className={classes}
+											onClick={() => handleClick(day, slot, cell)}
+										>
+											{!reserved && (
+												<span className="text-red-400 text-xs opacity-0 hover:opacity-100 transition">
+													Book
+												</span>
+											)}
 
-												if (!reserved) {
-													handleSlotClick(day, slot, reserved);
-												}
-
-												if (reserved && isMine) {
-													handleCancel(cell.reservationId);
-												}
-
-											}}
-											title={
-												reserved
-													? `Reserved by: ${cell.teacherName}\nWeek: ${week}\nTime: ${slotTimes[slot]}`
-													: "Available"
-											}
-											style={{
-												backgroundColor:
-													reserved
-														? isMine
-															? "#99ccff"
-															: "#ffcccc"
-														: "#ccffcc",
-												cursor: "pointer"
-											}}
-										></td>
-
+											{reserved && isMine && (
+												<span className="text-xs font-semibold">
+													Mine
+												</span>
+											)}
+										</div>
 									);
 
 								})}
-
-							</tr>
-
+							</>
 						))}
 
-					</tbody>
+					</div>
 
-				</table>
+				</div>
+
+				{modal && (
+					<div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+
+						<div className="bg-white rounded-xl shadow-2xl w-full max-w-md p-6 border border-gray-200">
+
+							<div className="flex justify-between items-center mb-6">
+
+								<div>
+									<h2 className="text-xl font-bold text-gray-900">
+										{modal.type === "book" ? "Book Slot" : "Reservation"}
+									</h2>
+
+									<p className="text-sm text-red-500 font-semibold mt-1">
+										{modal.day}, {slotTimes[modal.slot]}
+									</p>
+								</div>
+
+								<button
+									onClick={() => setModal(null)}
+									className="w-8 h-8 rounded-full hover:bg-gray-100 flex items-center justify-center"
+								>
+									✕
+								</button>
+
+							</div>
+
+							{modal.type === "book" && (
+								<div className="flex flex-col gap-4">
+
+									<input
+										placeholder="Course name"
+										className="w-full border border-gray-300 rounded-md px-4 py-3 focus:outline-none focus:ring-2 focus:ring-red-400"
+									/>
+
+									<textarea
+										placeholder="Description"
+										className="w-full border border-gray-300 rounded-md px-4 py-3 focus:outline-none focus:ring-2 focus:ring-red-400"
+									/>
+
+									<div className="flex gap-3 mt-2">
+
+										<button
+											onClick={() => setModal(null)}
+											className="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-800 py-3 rounded-md font-semibold"
+										>
+											Cancel
+										</button>
+
+										<button
+											onClick={confirmBooking}
+											className="flex-1 bg-red-500 hover:bg-red-600 text-white py-3 rounded-md font-semibold shadow-md"
+										>
+											Confirm
+										</button>
+
+									</div>
+
+								</div>
+							)}
+
+							{modal.type === "info" && (
+								<div className="flex flex-col gap-4">
+
+									<p className="text-sm text-gray-700">
+										Booked by: <strong>{modal.cell.teacherName}</strong>
+									</p>
+
+									<div className="flex gap-3">
+
+										<button
+											onClick={() => setModal(null)}
+											className="flex-1 bg-gray-100 hover:bg-gray-200 py-3 rounded-md font-semibold"
+										>
+											Close
+										</button>
+
+										{modal.mine && (
+											<button
+												onClick={cancelBooking}
+												className="flex-1 bg-red-500 hover:bg-red-600 text-white py-3 rounded-md font-semibold"
+											>
+												Cancel Booking
+											</button>
+										)}
+
+									</div>
+
+								</div>
+							)}
+
+						</div>
+
+					</div>
+				)}
 
 			</div>
-
 		</>
-
 	);
-
 }
 
 export default ClassroomPage;

@@ -1,8 +1,7 @@
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 
-function Navbar() {
-
+function Navbar({ minimal = false }) {
 	const { user, logout } = useAuth();
 	const navigate = useNavigate();
 
@@ -12,64 +11,65 @@ function Navbar() {
 	};
 
 	return (
+		<nav className="bg-white border-b border-gray-200 shadow-sm">
+			<div className="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
 
-		<nav className="navbar navbar-dark bg-dark navbar-expand-lg">
-
-			<div className="container">
-
-				<Link className="navbar-brand" to="/">
-					Campus Rooms
+				{/* LOGO */}
+				<Link to="/" className="flex items-center space-x-2">
+					<div className="w-6 h-6 bg-red-500 rounded-md"></div>
+					<span className="font-semibold text-gray-800 text-lg">
+						Spotix
+					</span>
 				</Link>
 
-				<div className="navbar-nav">
+				{/* 👉 If minimal → STOP here */}
+				{!minimal && (
+					<>
+						{/* NAV LINKS */}
+						<div className="flex items-center space-x-6 text-sm font-medium text-gray-600">
+							
+							<Link to="/" className="hover:text-red-500">Campus</Link>
 
-					<Link className="nav-link" to="/">
-						Campus
-					</Link>
+							{user?.role === "TEACHER" && (
+								<Link to="/my-reservations" className="hover:text-red-500">
+									My Reservations
+								</Link>
+							)}
 
-					{user?.role === "TEACHER" && (
-						<Link className="nav-link" to="/my-reservations">
-							My Reservations
-						</Link>
-					)}
+							{user?.role === "ADMIN" && (
+								<>
+									<Link to="/admin/building" className="hover:text-red-500">
+										Manage Buildings
+									</Link>
+									<Link to="/admin/analytics" className="hover:text-red-500">
+										Analytics
+									</Link>
+								</>
+							)}
 
-					{user?.role === "ADMIN" && (
-						<>
-							<Link className="nav-link" to="/admin/building">
-								Manage Buildings
+							<Link to="/profile" className="hover:text-red-500">
+								Profile
 							</Link>
+						</div>
 
-							<Link className="nav-link" to="/admin/analytics">
-								Reservation Analytics
-							</Link>
-						</>
-					)}
+						{/* RIGHT SIDE */}
+						<div className="flex items-center space-x-4">
+							<span className="text-sm text-gray-600">
+								{user?.email}
+							</span>
 
-					<Link className="nav-link" to="/profile">
-						Profile
-					</Link>
-
-				</div>
-
-				<div className="d-flex align-items-center">
-
-					<span className="text-white me-3">
-						{user?.email}
-					</span>
-
-					<button
-						className="btn btn-danger btn-sm"
-						onClick={handleLogout}
-					>
-						Logout
-					</button>
-
-				</div>
+							<button
+								onClick={handleLogout}
+								className="bg-red-500 hover:bg-red-600 text-white text-sm px-3 py-1.5 rounded-md"
+							>
+								Logout
+							</button>
+						</div>
+					</>
+				)}
 
 			</div>
-
 		</nav>
-
 	);
 }
 

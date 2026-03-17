@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import api from "../api/apiClient";
+import Navbar from "../components/Navbar";
 
 function RegisterPage() {
 
@@ -48,114 +49,118 @@ function RegisterPage() {
 	};
 
 	return (
+		<>
+			<Navbar minimal />
 
-		<div className="min-h-screen flex items-center justify-center bg-background-light p-6">
 
-			<div className="w-full max-w-md bg-white rounded-3xl shadow-xl p-10">
 
-				<h1 className="text-3xl font-bold text-slate-900 mb-2">
-					Create Account
-				</h1>
+			<div className="min-h-screen flex items-center justify-center bg-background-light p-6">
 
-				<p className="text-slate-500 mb-8">
-					Register for CampusView
-				</p>
+				<div className="w-full max-w-md bg-white rounded-3xl shadow-xl p-10">
 
-				{error && (
+					<h1 className="text-3xl font-bold text-slate-900 mb-2">
+						Create Account
+					</h1>
 
-					<div className="bg-red-100 text-red-600 p-3 rounded-lg mb-4 text-sm">
-						{error}
-					</div>
+					<p className="text-slate-500 mb-8">
+						Register for CampusView
+					</p>
 
-				)}
+					{error && (
 
-				<form onSubmit={handleSubmit} className="space-y-6">
+						<div className="bg-red-100 text-red-600 p-3 rounded-lg mb-4 text-sm">
+							{error}
+						</div>
 
-					{/* NAME */}
+					)}
 
-					<input
-						placeholder="Full name"
-						className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none"
-						value={name}
-						onChange={(e) => setName(e.target.value)}
-					/>
+					<form onSubmit={handleSubmit} className="space-y-6">
 
-					{/* EMAIL */}
-
-					<input
-						placeholder="Email"
-						type="email"
-						className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none"
-						value={email}
-						onChange={(e) => setEmail(e.target.value)}
-					/>
-
-					{/* PASSWORD */}
-
-					<div className="relative mt-2">
+						{/* NAME */}
 
 						<input
-							type={showPassword ? "text" : "password"}
-							placeholder="Enter your password"
+							placeholder="Full name"
 							className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none"
-							value={password}
-							onChange={(e) => setPassword(e.target.value)}
+							value={name}
+							onChange={(e) => setName(e.target.value)}
 						/>
 
-						<button
-							type="button"
-							className="absolute right-3 top-3 text-sm text-gray-500"
-							onClick={() => setShowPassword(!showPassword)}
+						{/* EMAIL */}
+
+						<input
+							placeholder="Email"
+							type="email"
+							className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none"
+							value={email}
+							onChange={(e) => setEmail(e.target.value)}
+						/>
+
+						{/* PASSWORD */}
+
+						<div className="relative mt-2">
+
+							<input
+								type={showPassword ? "text" : "password"}
+								placeholder="Enter your password"
+								className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none"
+								value={password}
+								onChange={(e) => setPassword(e.target.value)}
+							/>
+
+							<button
+								type="button"
+								className="absolute right-3 top-3 text-sm text-gray-500"
+								onClick={() => setShowPassword(!showPassword)}
+							>
+								{showPassword ? "Hide" : "Show"}
+							</button>
+
+						</div>
+
+						{/* ROLE */}
+
+						<select
+							value={role}
+							onChange={(e) => setRole(e.target.value)}
+							className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none"
 						>
-							{showPassword ? "Hide" : "Show"}
+
+							<option value="STUDENT">Student</option>
+							<option value="TEACHER">Teacher</option>
+							<option value="ADMIN">Admin</option>
+
+						</select>
+
+						{/* BUTTON */}
+
+						<button
+							disabled={loading}
+							className="w-full bg-red-500 text-white font-semibold py-3 rounded-xl hover:bg-red-600 transition"
+						>
+
+							{loading ? "Creating account..." : "Register"}
+
 						</button>
 
-					</div>
+					</form>
 
-					{/* ROLE */}
+					<p className="mt-6 text-sm text-center text-slate-600">
 
-					<select
-						value={role}
-						onChange={(e) => setRole(e.target.value)}
-						className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none"
-					>
+						Already have an account?
 
-						<option value="STUDENT">Student</option>
-						<option value="TEACHER">Teacher</option>
-						<option value="ADMIN">Admin</option>
+						<Link
+							to="/login"
+							className="ml-2 text-red-500 font-semibold hover:underline"
+						>
+							Login
+						</Link>
 
-					</select>
+					</p>
 
-					{/* BUTTON */}
-
-					<button
-						disabled={loading}
-						className="w-full bg-red-500 text-white font-semibold py-3 rounded-xl hover:bg-red-600 transition"
-					>
-
-						{loading ? "Creating account..." : "Register"}
-
-					</button>
-
-				</form>
-
-				<p className="mt-6 text-sm text-center text-slate-600">
-
-					Already have an account?
-
-					<Link
-						to="/login"
-						className="ml-2 text-red-500 font-semibold hover:underline"
-					>
-						Login
-					</Link>
-
-				</p>
+				</div>
 
 			</div>
-
-		</div>
-
+		</>
 	);
 
 }
