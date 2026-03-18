@@ -46,9 +46,12 @@ function FloorPage() {
 
 					<button
 						onClick={() => navigate(-1)}
-						className="mb-6 flex items-center gap-2 text-sm text-muted hover:text-primary transition"
+						className="mb-6 inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-100 hover:text-red-500 transition"
 					>
-						← Back
+						<span className="transition group-hover:-translate-x-1">
+							←
+						</span>
+						Back
 					</button>
 
 					<h2 className="text-4xl font-extrabold text-text-main mb-2">

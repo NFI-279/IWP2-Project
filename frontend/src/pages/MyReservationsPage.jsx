@@ -22,112 +22,128 @@ function MyReservationsPage() {
 	}, []);
 
 	const loadReservations = async () => {
-
 		try {
-
 			const data = await getMyReservations();
 			setReservations(data);
-
 		} catch (err) {
-
 			console.error("Failed to load reservations", err);
-
 		}
-
 	};
 
 	const handleCancel = async (id) => {
-
 		const confirmCancel = window.confirm("Cancel this reservation?");
-
 		if (!confirmCancel) return;
 
 		try {
-
 			await deleteReservation(id);
 			loadReservations();
-
 		} catch (err) {
-
 			console.error("Cancel failed", err);
-
 		}
-
 	};
 
 	return (
-
 		<>
-
 			<Navbar />
 
-			<div className="container mt-5">
+			<div className="min-h-screen bg-gray-50 px-6 py-10">
 
-				<button
-					className="btn btn-secondary mb-3"
-					onClick={() => navigate(-1)}
-				>
-					← Back
-				</button>
+				{/* HEADER */}
+				<div className="max-w-6xl mx-auto mb-8">
+					<button
+						onClick={() => navigate(-1)}
+						className="mb-6 inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-100 hover:text-red-500 transition"
+					>
+						<span className="transition group-hover:-translate-x-1">
+							←
+						</span>
+						Back
+					</button>
 
-				<h2 className="mb-4">My Reservations</h2>
+					<h2 className="text-3xl font-bold text-gray-800 mb-1">
+						My Reservations
+					</h2>
 
-				<table className="table table-bordered">
+					<p className="text-gray-500">
+						View and manage your classroom bookings
+					</p>
+				</div>
 
-					<thead>
+				{/* CONTENT */}
+				<div className="max-w-6xl mx-auto">
+					<div className="bg-white border border-gray-200 rounded-lg shadow-sm overflow-hidden">
 
-						<tr>
-							<th>Classroom</th>
-							<th>Week</th>
-							<th>Day</th>
-							<th>Time</th>
-							<th>Action</th>
-						</tr>
+						{reservations.length === 0 ? (
+							<div className="p-8 text-center text-gray-500">
+								You have no reservations yet.
+							</div>
+						) : (
+							<div className="overflow-x-auto">
+								<table className="min-w-full divide-y divide-gray-200">
+									<thead className="bg-gray-50">
+										<tr>
+											<th className="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider text-gray-500">
+												Classroom
+											</th>
+											<th className="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider text-gray-500">
+												Week
+											</th>
+											<th className="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider text-gray-500">
+												Day
+											</th>
+											<th className="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider text-gray-500">
+												Time
+											</th>
+											<th className="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider text-gray-500">
+												Action
+											</th>
+										</tr>
+									</thead>
 
-					</thead>
+									<tbody className="divide-y divide-gray-200 bg-white">
+										{reservations.map((res) => (
+											<tr key={res.id} className="hover:bg-gray-50 transition">
+												<td className="px-6 py-4">
+													<button
+														onClick={() => navigate(`/classroom/${res.classroomId}`)}
+														className="font-medium text-red-500 hover:text-red-600 hover:underline transition"
+													>
+														{res.classroomName}
+													</button>
+												</td>
 
-					<tbody>
+												<td className="px-6 py-4 text-gray-700">
+													{res.week}
+												</td>
 
-						{reservations.map(res => (
+												<td className="px-6 py-4 text-gray-700">
+													{res.day}
+												</td>
 
-							<tr key={res.id}>
+												<td className="px-6 py-4 text-gray-700">
+													{slotTimes[res.slot]}
+												</td>
 
-								<td
-									style={{ cursor: "pointer", color: "blue" }}
-									onClick={() => navigate(`/classroom/${res.classroomId}`)}
-								>
-									{res.classroomName}
-								</td>
+												<td className="px-6 py-4">
+													<button
+														onClick={() => handleCancel(res.id)}
+														className="bg-red-500 hover:bg-red-600 text-white text-sm font-medium px-4 py-2 rounded-md transition"
+													>
+														Cancel
+													</button>
+												</td>
+											</tr>
+										))}
+									</tbody>
+								</table>
+							</div>
+						)}
 
-								<td>{res.week}</td>
-
-								<td>{res.day}</td>
-
-								<td>{slotTimes[res.slot]}</td>
-
-								<td>
-
-									<button
-										className="btn btn-danger btn-sm"
-										onClick={() => handleCancel(res.id)}
-									>
-										Cancel
-									</button>
-
-								</td>
-
-							</tr>
-
-						))}
-
-					</tbody>
-
-				</table>
+					</div>
+				</div>
 
 			</div>
-
 		</>
-
 	);
 
 }

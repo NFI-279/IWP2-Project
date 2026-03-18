@@ -23,7 +23,7 @@ function DashboardPage() {
 	};
 
 	const toggleAccordion = (id, e) => {
-		e.stopPropagation(); // 🔥 prevents navigation
+		e.stopPropagation();
 		setOpenBuildingId(prev => (prev === id ? null : id));
 	};
 
