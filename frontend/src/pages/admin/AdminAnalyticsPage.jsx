@@ -1,8 +1,6 @@
 import { useEffect, useState } from "react";
 import api from "../../api/apiClient";
-import {
-	Bar
-} from "react-chartjs-2";
+import { Bar } from "react-chartjs-2";
 import { useNavigate } from "react-router-dom";
 
 import {
@@ -26,8 +24,7 @@ ChartJS.register(
 
 function AdminAnalyticsPage() {
 
-	const [data, setData] = useState([]);
-
+	const [data, setData] = useState(null);
 	const navigate = useNavigate();
 
 	useEffect(() => {
@@ -35,9 +32,7 @@ function AdminAnalyticsPage() {
 	}, []);
 
 	const load = async () => {
-
 		const res = await api.get("/reservations");
-
 		const reservations = res.data;
 
 		const counts = {};
@@ -56,30 +51,57 @@ function AdminAnalyticsPage() {
 				{
 					label: "Reservations",
 					data: values,
-					backgroundColor: "rgba(75,192,192,0.6)"
+					backgroundColor: "rgba(59, 130, 246, 0.7)" // nicer blue
 				}
 			]
 		});
-
 	};
 
-	if (!data.labels) return <div>Loading...</div>;
+	if (!data) return <div className="p-6">Loading...</div>;
 
 	return (
+		<div className="max-w-6xl mx-auto px-4 py-6">
 
-		<div>
+			{/* Back Button */}
 			<button
-				className="btn btn-secondary mb-3"
 				onClick={() => navigate(-1)}
+				className="mb-6 inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-100 hover:text-red-500 transition"
 			>
-				← Back
+				<span className="transition group-hover:-translate-x-1">
+					←
+				</span>
+				Back
 			</button>
-			<h2 className="mb-4">Reservation Analytics</h2>
 
-			<Bar data={data} />
+			<h2 className="text-2xl font-bold mb-6">
+				Reservation Analytics
+			</h2>
+
+			{/* Chart Card */}
+			<div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+
+				<div className="h-[400px]">
+					<Bar
+						data={data}
+						options={{
+							responsive: true,
+							maintainAspectRatio: false,
+							plugins: {
+								legend: {
+									display: false
+								},
+								title: {
+									display: true,
+									text: "Reservations per Classroom"
+								}
+							}
+						}}
+					/>
+				</div>
+
+			</div>
 
 		</div>
-
 	);
 }
 

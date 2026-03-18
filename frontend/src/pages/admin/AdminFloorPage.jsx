@@ -56,7 +56,6 @@ function AdminFloorPage() {
 
 	const handleDelete = async (id) => {
 		const confirmDelete = window.confirm("Delete this floor?");
-
 		if (!confirmDelete) return;
 
 		try {
@@ -69,78 +68,83 @@ function AdminFloorPage() {
 	};
 
 	return (
-		<div className="container mt-5">
+		<div className="max-w-6xl mx-auto px-4 py-6">
 			<button
-				className="btn btn-secondary mb-3"
 				onClick={() => navigate(-1)}
+				className="mb-6 inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-100 hover:text-red-500 transition"
 			>
-				← Back
+				<span className="transition group-hover:-translate-x-1">
+					←
+				</span>
+				Back
 			</button>
-			<h2 className="mb-4">Admin — Floors</h2>
 
-			<div className="card p-3 mb-4">
-				<h5>Upload Floor Map</h5>
+			<h2 className="text-2xl font-bold mb-6">Admin — Floors</h2>
 
-				<input
-					className="form-control mb-2"
-					placeholder="Floor name"
-					value={name}
-					onChange={(e) => setName(e.target.value)}
-				/>
+			<div className="bg-white rounded-xl shadow-sm border border-gray-200 p-5 mb-6">
+				<h3 className="text-lg font-semibold mb-4">Upload Floor Map</h3>
 
-				<input
-					id="floor-file-input"
-					type="file"
-					className="form-control mb-3"
-					accept="image/*"
-					onChange={(e) => setFile(e.target.files[0] ?? null)}
-				/>
+				<div className="space-y-3">
+					<input
+						className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+						placeholder="Floor name"
+						value={name}
+						onChange={(e) => setName(e.target.value)}
+					/>
 
-				<button
-					className="btn btn-success"
-					onClick={handleUpload}
-					disabled={uploading}
-				>
-					{uploading ? "Uploading..." : "Upload Floor"}
-				</button>
+					<input
+						id="floor-file-input"
+						type="file"
+						accept="image/*"
+						className="w-full px-3 py-2 border border-gray-300 rounded-md bg-white file:mr-4 file:px-4 file:py-2 file:border-0 file:rounded-md file:bg-gray-100 file:text-gray-700 hover:file:bg-gray-200"
+						onChange={(e) => setFile(e.target.files[0] ?? null)}
+					/>
+
+					<div>
+						<button
+							className="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition disabled:opacity-50"
+							onClick={handleUpload}
+							disabled={uploading}
+						>
+							{uploading ? "Uploading..." : "Upload Floor"}
+						</button>
+					</div>
+				</div>
 			</div>
 
-			<div className="row">
+			<div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
 				{floors.map((floor) => (
-					<div key={floor.id} className="col-md-4 mb-4">
-						<div className="card shadow-sm">
-							<div className="card-body">
-								<h5>{floor.name}</h5>
+					<div
+						key={floor.id}
+						className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden"
+					>
+						{floor.imagePath && (
+							<img
+								src={`http://localhost:8081${floor.imagePath}`}
+								alt={floor.name}
+								className="w-full h-48 object-cover"
+							/>
+						)}
 
-								{floor.imagePath && (
-									<img
-										src={`http://localhost:8081${floor.imagePath}`}
-										alt={floor.name}
-										style={{
-											width: "100%",
-											height: "180px",
-											objectFit: "cover",
-											marginBottom: "10px",
-											borderRadius: "6px"
-										}}
-									/>
-								)}
+						<div className="p-4">
+							<h3 className="text-lg font-semibold mb-4">
+								{floor.name}
+							</h3>
 
-								<div className="d-flex justify-content-between">
-									<button
-										className="btn btn-primary btn-sm"
-										onClick={() => navigate(`/admin/layout/${floor.id}`)}
-									>
-										Edit Layout
-									</button>
+							<div className="flex justify-between gap-2">
+								<button
+									className="px-3 py-1.5 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition text-sm"
+									onClick={() => navigate(`/admin/layout/${floor.id}`)}
+								>
+									Edit Layout
+								</button>
 
-									<button
-										className="btn btn-danger btn-sm"
-										onClick={() => handleDelete(floor.id)}
-									>
-										Delete
-									</button>
-								</div>
+								<button
+									className="px-3 py-1.5 bg-red-500 text-white rounded-md hover:bg-red-600 transition text-sm"
+									onClick={() => handleDelete(floor.id)}
+								>
+									Delete
+								</button>
 							</div>
 						</div>
 					</div>

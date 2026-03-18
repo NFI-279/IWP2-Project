@@ -1,19 +1,15 @@
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { getClassrooms } from "../../api/classroomApi";
 import { createClassroom, deleteClassroom } from "../../api/adminApi";
-import { useNavigate } from "react-router-dom";
 
 function AdminClassroomPage() {
-
 	const { floorId } = useParams();
+	const navigate = useNavigate();
 
 	const [classrooms, setClassrooms] = useState([]);
-
 	const [name, setName] = useState("");
 	const [capacity, setCapacity] = useState("");
-
-	const navigate = useNavigate();
 
 	useEffect(() => {
 		loadClassrooms();
@@ -25,7 +21,6 @@ function AdminClassroomPage() {
 	};
 
 	const handleCreate = async () => {
-
 		await createClassroom(floorId, {
 			name,
 			capacity,
@@ -37,7 +32,6 @@ function AdminClassroomPage() {
 
 		setName("");
 		setCapacity("");
-
 		loadClassrooms();
 	};
 
@@ -47,64 +41,75 @@ function AdminClassroomPage() {
 	};
 
 	return (
+		<div className="max-w-5xl mx-auto px-4 py-6">
 
-		<div>
+			{/* Back Button */}
 			<button
-				className="btn btn-secondary mb-3"
 				onClick={() => navigate(-1)}
+				className="mb-6 inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-100 hover:text-red-500 transition"
 			>
-				← Back
+				<span className="transition group-hover:-translate-x-1">←</span>
+				Back
 			</button>
-			<h2 className="mb-4">Classrooms</h2>
 
-			<div className="card p-3 mb-4">
+			<h2 className="text-2xl font-bold mb-6">Classrooms</h2>
+
+			{/* Create Form */}
+			<div className="bg-white rounded-xl shadow-sm border border-gray-200 p-5 mb-6 space-y-3">
 
 				<input
-					className="form-control mb-2"
+					className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
 					placeholder="Classroom name"
 					value={name}
 					onChange={e => setName(e.target.value)}
 				/>
 
 				<input
-					className="form-control mb-2"
+					type="number"
+					className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
 					placeholder="Capacity"
 					value={capacity}
 					onChange={e => setCapacity(e.target.value)}
 				/>
 
-				<button className="btn btn-success" onClick={handleCreate}>
+				<button
+					className="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition"
+					onClick={handleCreate}
+				>
 					Create Classroom
 				</button>
 
 			</div>
 
-			<ul className="list-group">
+			{/* Classroom List */}
+			<div className="bg-white rounded-xl shadow-sm border border-gray-200 divide-y">
 
 				{classrooms.map(room => (
-
-					<li
+					<div
 						key={room.id}
-						className="list-group-item d-flex justify-content-between"
+						className="flex items-center justify-between px-4 py-3"
 					>
 
-						{room.name} — Capacity {room.capacity}
+						<div>
+							<p className="font-medium">{room.name}</p>
+							<p className="text-sm text-gray-500">
+								Capacity: {room.capacity}
+							</p>
+						</div>
 
 						<button
-							className="btn btn-danger btn-sm"
+							className="px-3 py-1.5 bg-red-500 text-white rounded-md hover:bg-red-600 transition text-sm"
 							onClick={() => handleDelete(room.id)}
 						>
 							Delete
 						</button>
 
-					</li>
-
+					</div>
 				))}
 
-			</ul>
+			</div>
 
 		</div>
-
 	);
 }
 
