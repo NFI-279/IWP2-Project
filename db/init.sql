@@ -14,7 +14,8 @@ CREATE TABLE users (
 
 CREATE TABLE buildings (
   id SERIAL PRIMARY KEY,
-  name VARCHAR(100) UNIQUE NOT NULL
+  name VARCHAR(100) UNIQUE NOT NULL,
+  image_path VARCHAR(255)
 );
 
 CREATE TABLE floors (

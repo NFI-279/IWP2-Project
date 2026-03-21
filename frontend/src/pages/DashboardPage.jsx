@@ -64,7 +64,7 @@ function DashboardPage() {
 										className="absolute inset-0 bg-cover bg-center group-hover:scale-105 transition duration-300"
 										style={{
 											backgroundImage:
-												"url('https://images.unsplash.com/photo-1503676260728-1c00da094a0b')"
+												`url(http://localhost:8081${building.imagePath})`
 										}}
 									/>
 

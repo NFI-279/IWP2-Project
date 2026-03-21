@@ -1,8 +1,17 @@
 import api from "./apiClient";
 
-export async function createBuilding(name) {
-  const res = await api.post("/admin/buildings", { name });
-  return res.data;
+export async function createBuilding(formData) {
+	const res = await api.post(
+		"/admin/buildings/upload",
+		formData,
+		{
+			headers: {
+				"Content-Type": "multipart/form-data"
+			}
+		}
+	);
+
+	return res.data;
 }
 
 export async function deleteBuilding(id) {

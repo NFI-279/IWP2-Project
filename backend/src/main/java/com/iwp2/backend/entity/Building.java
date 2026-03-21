@@ -12,13 +12,16 @@ import java.util.List;
 @Setter
 public class Building {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Long id;
 
-    @Column(nullable = false, unique = true)
-    private String name;
+	@Column(nullable = false, unique = true)
+	private String name;
 
-    @OneToMany(mappedBy = "building", cascade = CascadeType.ALL)
-    private List<Floor> floors;
+	@Column(name = "image_path")
+	private String imagePath;
+
+	@OneToMany(mappedBy = "building", cascade = CascadeType.ALL)
+	private List<Floor> floors;
 }
