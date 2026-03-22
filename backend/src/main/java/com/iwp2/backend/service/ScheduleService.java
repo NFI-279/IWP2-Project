@@ -4,6 +4,7 @@ import com.iwp2.backend.dto.schedule.*;
 import com.iwp2.backend.entity.Reservation;
 import com.iwp2.backend.model.Day;
 import com.iwp2.backend.repository.ReservationRepository;
+import com.iwp2.backend.repository.ReservationSubscriptionRepository;
 
 import org.springframework.stereotype.Service;
 
@@ -13,12 +14,15 @@ import java.util.*;
 public class ScheduleService {
 
 	private final ReservationRepository reservationRepository;
+	private final ReservationSubscriptionRepository subscriptionRepository;
 
-	public ScheduleService(ReservationRepository reservationRepository) {
+	public ScheduleService(ReservationRepository reservationRepository,
+			ReservationSubscriptionRepository subscriptionRepository) {
 		this.reservationRepository = reservationRepository;
+		this.subscriptionRepository = subscriptionRepository;
 	}
 
-	public ClassroomSchedule getClassroomSchedule(Long classroomId, Integer week) {
+	public ClassroomSchedule getClassroomSchedule(Long classroomId, Integer week, Long userId) {
 
 		List<Reservation> reservations = reservationRepository.findByClassroom_IdAndWeekNumber(classroomId, week);
 
@@ -46,14 +50,18 @@ public class ScheduleService {
 				}
 
 				if (reservation == null) {
-					slots.add(new SlotSchedule(slot, false, null, null));
+					slots.add(new SlotSchedule(slot, false, null, null, 0, 0, false));
 				} else {
 					slots.add(
 							new SlotSchedule(
 									slot,
 									true,
 									reservation.getTeacher().getEmail(),
-									reservation.getId()));
+									reservation.getId(),
+									subscriptionRepository.countByReservationId(reservation.getId()),
+									reservation.getClassroom().getCapacity(),
+									subscriptionRepository
+											.existsByReservationIdAndStudentId(reservation.getId(), userId)));
 				}
 			}
 

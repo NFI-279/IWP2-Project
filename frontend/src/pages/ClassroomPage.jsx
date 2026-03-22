@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { getClassroomSchedule } from "../api/scheduleApi";
-import { createReservation, deleteReservation } from "../api/reservationApi";
+import { createReservation, deleteReservation, subscribeToReservation, unsubscribeFromReservation } from "../api/reservationApi";
 import { useAuth } from "../context/AuthContext";
 import Navbar from "../components/Navbar";
 
@@ -33,8 +33,9 @@ function ClassroomPage() {
 	}, [week]);
 
 	const loadSchedule = async () => {
+		if (!user) return;
 		try {
-			const data = await getClassroomSchedule(classroomId, week);
+			const data = await getClassroomSchedule(classroomId, week, user.id);
 			setSchedule(data);
 		} catch (err) {
 			console.error(err);
@@ -81,6 +82,24 @@ function ClassroomPage() {
 			loadSchedule();
 		} catch {
 			alert("Cancel failed");
+		}
+	};
+
+	const handleSubscribe = async (reservationId) => {
+		try {
+			await subscribeToReservation(reservationId, user.id);
+			loadSchedule();
+		} catch {
+			alert("Subscribe failed");
+		}
+	};
+
+	const handleUnsubscribe = async (reservationId) => {
+		try {
+			await unsubscribeFromReservation(reservationId, user.id);
+			loadSchedule();
+		} catch {
+			alert("Unsubscribe failed");
 		}
 	};
 
@@ -152,10 +171,50 @@ function ClassroomPage() {
 												</span>
 											)}
 
-											{reserved && isMine && (
-												<span className="text-xs font-semibold">
-													Mine
-												</span>
+											{reserved && (
+												<div className="flex flex-col items-center justify-center text-xs gap-1">
+
+													{/* Teacher view */}
+													{user?.role === "TEACHER" && isMine && (
+														<span className="font-semibold">Mine</span>
+													)}
+
+													{/* Student view */}
+													{user?.role === "STUDENT" && (
+														<>
+															<span className="text-[10px]">
+																{cell.subscribedCount} / {cell.capacity}
+															</span>
+
+															{cell.isSubscribed ? (
+																<button
+																	onClick={(e) => {
+																		e.stopPropagation();
+																		handleUnsubscribe(cell.reservationId);
+																	}}
+																	className="text-[10px] px-2 py-1 bg-gray-200 rounded hover:bg-gray-300"
+																>
+																	Leave
+																</button>
+															) : cell.subscribedCount < cell.capacity ? (
+																<button
+																	onClick={(e) => {
+																		e.stopPropagation();
+																		handleSubscribe(cell.reservationId);
+																	}}
+																	className="text-[10px] px-2 py-1 bg-red-500 text-white rounded hover:bg-red-600"
+																>
+																	Join
+																</button>
+															) : (
+																<span className="text-[10px] text-gray-400">
+																	Full
+																</span>
+															)}
+														</>
+													)}
+
+												</div>
 											)}
 										</div>
 									);

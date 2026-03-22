@@ -18,8 +18,9 @@ public class ScheduleController {
 	@GetMapping("/{id}/schedule")
 	public ClassroomSchedule getSchedule(
 			@PathVariable Long id,
-			@RequestParam Integer week) {
+			@RequestParam Integer week,
+			@RequestParam Long userId) {
 
-		return scheduleService.getClassroomSchedule(id, week);
+		return scheduleService.getClassroomSchedule(id, week, userId);
 	}
 }

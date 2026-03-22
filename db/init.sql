@@ -53,4 +53,12 @@ CREATE TABLE reservations (
   UNIQUE (teacher_id, week_number, day_of_week, time_slot)
 );
 
+CREATE TABLE reservation_subscriptions (
+  id SERIAL PRIMARY KEY,
+  reservation_id INTEGER NOT NULL REFERENCES reservations(id) ON DELETE CASCADE,
+  student_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  UNIQUE (reservation_id, student_id)
+);
+
 INSERT INTO roles (name) VALUES ('STUDENT'), ('TEACHER'), ('ADMIN');
