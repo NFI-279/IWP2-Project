@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.iwp2.backend.dto.StudentSubscription;
 import com.iwp2.backend.entity.Reservation;
 import com.iwp2.backend.entity.ReservationSubscription;
 import com.iwp2.backend.entity.User;
@@ -63,6 +64,25 @@ public class ReservationSubscriptionService {
 		return subscriptionRepository.findByReservationId(reservationId)
 				.stream()
 				.map(ReservationSubscription::getStudent)
+				.toList();
+	}
+
+	public List<StudentSubscription> getStudentSubscriptions(Long studentId) {
+
+		return subscriptionRepository.findByStudentId(studentId)
+				.stream()
+				.map(sub -> {
+					Reservation r = sub.getReservation();
+
+					return new StudentSubscription(
+							r.getId(),
+							r.getClassroom().getId(),
+							r.getClassroom().getName(),
+							r.getTeacher().getEmail(),
+							r.getWeekNumber(),
+							r.getDay().name(),
+							r.getTimeSlot());
+				})
 				.toList();
 	}
 }

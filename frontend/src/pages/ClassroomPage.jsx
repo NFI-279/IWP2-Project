@@ -30,7 +30,7 @@ function ClassroomPage() {
 		loadSchedule();
 		const interval = setInterval(loadSchedule, 5000);
 		return () => clearInterval(interval);
-	}, [week]);
+	}, [week, user]);
 
 	const loadSchedule = async () => {
 		if (!user) return;
@@ -88,6 +88,7 @@ function ClassroomPage() {
 	const handleSubscribe = async (reservationId) => {
 		try {
 			await subscribeToReservation(reservationId, user.id);
+			setModal(null);
 			loadSchedule();
 		} catch {
 			alert("Subscribe failed");
@@ -97,6 +98,7 @@ function ClassroomPage() {
 	const handleUnsubscribe = async (reservationId) => {
 		try {
 			await unsubscribeFromReservation(reservationId, user.id);
+			setModal(null);
 			loadSchedule();
 		} catch {
 			alert("Unsubscribe failed");
@@ -156,7 +158,7 @@ function ClassroomPage() {
 									else if (isMine) {
 										classes += " bg-red-500 text-white shadow-md cursor-pointer";
 									} else {
-										classes += " bg-red-100 border border-red-200 text-red-400";
+										classes += " bg-red-100 border border-red-200 text-red-400 cursor-pointer";
 									}
 
 									return (
@@ -171,51 +173,18 @@ function ClassroomPage() {
 												</span>
 											)}
 
-											{reserved && (
-												<div className="flex flex-col items-center justify-center text-xs gap-1">
-
-													{/* Teacher view */}
-													{user?.role === "TEACHER" && isMine && (
-														<span className="font-semibold">Mine</span>
-													)}
-
-													{/* Student view */}
-													{user?.role === "STUDENT" && (
-														<>
-															<span className="text-[10px]">
-																{cell.subscribedCount} / {cell.capacity}
-															</span>
-
-															{cell.isSubscribed ? (
-																<button
-																	onClick={(e) => {
-																		e.stopPropagation();
-																		handleUnsubscribe(cell.reservationId);
-																	}}
-																	className="text-[10px] px-2 py-1 bg-gray-200 rounded hover:bg-gray-300"
-																>
-																	Leave
-																</button>
-															) : cell.subscribedCount < cell.capacity ? (
-																<button
-																	onClick={(e) => {
-																		e.stopPropagation();
-																		handleSubscribe(cell.reservationId);
-																	}}
-																	className="text-[10px] px-2 py-1 bg-red-500 text-white rounded hover:bg-red-600"
-																>
-																	Join
-																</button>
-															) : (
-																<span className="text-[10px] text-gray-400">
-																	Full
-																</span>
-															)}
-														</>
-													)}
-
-												</div>
+											{reserved && user?.role === "STUDENT" && (
+												<span className="text-[10px]">
+													{cell.subscribedCount} / {cell.capacity}
+												</span>
 											)}
+
+											{reserved && user?.role === "TEACHER" && isMine && (
+												<span className="text-xs font-semibold">
+													Mine
+												</span>
+											)}
+
 										</div>
 									);
 
@@ -232,24 +201,15 @@ function ClassroomPage() {
 
 						<div className="bg-white rounded-xl shadow-2xl w-full max-w-md p-6 border border-gray-200">
 
-							<div className="flex justify-between items-center mb-6">
+							<div className="mb-6">
 
-								<div>
-									<h2 className="text-xl font-bold text-gray-900">
-										{modal.type === "book" ? "Book Slot" : "Reservation"}
-									</h2>
+								<h2 className="text-xl font-bold text-gray-900">
+									{modal.type === "book" ? "Book Slot" : "Reservation"}
+								</h2>
 
-									<p className="text-sm text-red-500 font-semibold mt-1">
-										{modal.day}, {slotTimes[modal.slot]}
-									</p>
-								</div>
-
-								<button
-									onClick={() => setModal(null)}
-									className="w-8 h-8 rounded-full hover:bg-gray-100 flex items-center justify-center"
-								>
-									✕
-								</button>
+								<p className="text-sm text-red-500 font-semibold mt-1">
+									{modal.day}, {slotTimes[modal.slot]}
+								</p>
 
 							</div>
 
@@ -270,14 +230,14 @@ function ClassroomPage() {
 
 										<button
 											onClick={() => setModal(null)}
-											className="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-800 py-3 rounded-md font-semibold"
+											className="flex-1 bg-gray-100 hover:bg-gray-200 py-3 rounded-md font-semibold"
 										>
 											Cancel
 										</button>
 
 										<button
 											onClick={confirmBooking}
-											className="flex-1 bg-red-500 hover:bg-red-600 text-white py-3 rounded-md font-semibold shadow-md"
+											className="flex-1 bg-red-500 hover:bg-red-600 text-white py-3 rounded-md font-semibold"
 										>
 											Confirm
 										</button>
@@ -294,6 +254,12 @@ function ClassroomPage() {
 										Booked by: <strong>{modal.cell.teacherName}</strong>
 									</p>
 
+									{user?.role === "STUDENT" && (
+										<p className="text-sm text-gray-600">
+											Students: {modal.cell.subscribedCount} / {modal.cell.capacity}
+										</p>
+									)}
+
 									<div className="flex gap-3">
 
 										<button
@@ -303,13 +269,38 @@ function ClassroomPage() {
 											Close
 										</button>
 
-										{modal.mine && (
+										{modal.mine && user?.role === "TEACHER" && (
 											<button
 												onClick={cancelBooking}
 												className="flex-1 bg-red-500 hover:bg-red-600 text-white py-3 rounded-md font-semibold"
 											>
 												Cancel Booking
 											</button>
+										)}
+
+										{user?.role === "STUDENT" && (
+											modal.cell.isSubscribed ? (
+												<button
+													onClick={() => handleUnsubscribe(modal.cell.reservationId)}
+													className="flex-1 bg-red-500 hover:bg-red-600 text-white py-3 rounded-md font-semibold"
+												>
+													Leave
+												</button>
+											) : modal.cell.subscribedCount < modal.cell.capacity ? (
+												<button
+													onClick={() => handleSubscribe(modal.cell.reservationId)}
+													className="flex-1 bg-red-500 hover:bg-red-600 text-white py-3 rounded-md font-semibold"
+												>
+													Join
+												</button>
+											) : (
+												<button
+													disabled
+													className="flex-1 bg-gray-200 text-gray-400 py-3 rounded-md font-semibold"
+												>
+													Full
+												</button>
+											)
 										)}
 
 									</div>

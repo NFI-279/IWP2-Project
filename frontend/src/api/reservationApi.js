@@ -37,3 +37,8 @@ export const getReservationStudents = async (reservationId) => {
 
     return res.json();
 };
+
+export async function getMySubscriptions(studentId) {
+  const res = await api.get(`/reservations/subscriptions/my?studentId=${studentId}`);
+  return res.data;
+}

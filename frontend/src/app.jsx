@@ -8,6 +8,7 @@ import BuildingPage from "./pages/BuildingPage";
 import FloorPage from "./pages/FloorPage";
 import ClassroomPage from "./pages/ClassroomPage";
 import MyReservationsPage from "./pages/MyReservationsPage";
+import MySubscriptionsPage from "./pages/MySubscriptionPage";
 import ProfilePage from "./pages/ProfilePage";
 
 import AdminLayout from "./pages/admin/AdminLayout";
@@ -75,6 +76,8 @@ function App() {
 					<Route path="layout/:floorId" element={<AdminLayoutEditorPage />} />
 					<Route path="analytics" element={<AdminAnalyticsPage />} />
 				</Route>
+
+				<Route path="/my-classes" element={<MySubscriptionsPage />} />
 
 				<Route path="/my-reservations" element={<MyReservationsPage />} />
 

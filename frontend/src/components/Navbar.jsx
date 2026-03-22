@@ -22,13 +22,18 @@ function Navbar({ minimal = false }) {
 					</span>
 				</Link>
 
-				{/* 👉 If minimal → STOP here */}
 				{!minimal && (
 					<>
 						{/* NAV LINKS */}
 						<div className="flex items-center space-x-6 text-sm font-medium text-gray-600">
 							
 							<Link to="/" className="hover:text-red-500">Campus</Link>
+
+							{user?.role === "STUDENT" && (
+								<Link to="/my-classes" className="hover:text-red-500">
+									My Classes
+								</Link>
+							)}
 
 							{user?.role === "TEACHER" && (
 								<Link to="/my-reservations" className="hover:text-red-500">
