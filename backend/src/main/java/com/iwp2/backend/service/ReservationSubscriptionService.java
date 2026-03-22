@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.iwp2.backend.dto.StudentSubscription;
+import com.iwp2.backend.dto.UserResponse;
 import com.iwp2.backend.entity.Reservation;
 import com.iwp2.backend.entity.ReservationSubscription;
 import com.iwp2.backend.entity.User;
@@ -59,11 +60,14 @@ public class ReservationSubscriptionService {
 		subscriptionRepository.deleteByReservationIdAndStudentId(reservationId, studentId);
 	}
 
-	public List<User> getStudents(Long reservationId) {
+	public List<UserResponse> getStudents(Long reservationId) {
 
 		return subscriptionRepository.findByReservationId(reservationId)
 				.stream()
-				.map(ReservationSubscription::getStudent)
+				.map(sub -> {
+					User u = sub.getStudent();
+					return new UserResponse(u);
+				})
 				.toList();
 	}
 

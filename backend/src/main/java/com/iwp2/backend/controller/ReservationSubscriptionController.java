@@ -6,7 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import com.iwp2.backend.dto.StudentSubscription;
-import com.iwp2.backend.entity.User;
+import com.iwp2.backend.dto.UserResponse;
 import com.iwp2.backend.service.ReservationSubscriptionService;
 
 import lombok.RequiredArgsConstructor;
@@ -35,8 +35,7 @@ public class ReservationSubscriptionController {
 	}
 
 	@GetMapping("/{id}/students")
-	public ResponseEntity<List<User>> getStudents(@PathVariable Long id) {
-
+	public ResponseEntity<List<UserResponse>> getStudents(@PathVariable Long id) {
 		return ResponseEntity.ok(service.getStudents(id));
 	}
 

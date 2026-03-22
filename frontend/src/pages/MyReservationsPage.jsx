@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Navbar from "../components/Navbar";
-import { getMyReservations, deleteReservation } from "../api/reservationApi";
+import { getMyReservations, deleteReservation, getStudentsForReservation } from "../api/reservationApi";
 
 const slotTimes = {
 	1: "08:00–10:00",
@@ -16,6 +16,9 @@ function MyReservationsPage() {
 
 	const navigate = useNavigate();
 	const [reservations, setReservations] = useState([]);
+
+	const [students, setStudents] = useState([]);
+	const [selectedReservation, setSelectedReservation] = useState(null);
 
 	useEffect(() => {
 		loadReservations();
@@ -40,6 +43,21 @@ function MyReservationsPage() {
 		} catch (err) {
 			console.error("Cancel failed", err);
 		}
+	};
+
+	const handleViewStudents = async (reservationId) => {
+		try {
+			const data = await getStudentsForReservation(reservationId);
+			setStudents(data);
+			setSelectedReservation(reservationId);
+		} catch (err) {
+			console.error("Failed to load students", err);
+		}
+	};
+
+	const closeModal = () => {
+		setSelectedReservation(null);
+		setStudents([]);
 	};
 
 	return (
@@ -106,7 +124,7 @@ function MyReservationsPage() {
 												<td className="px-6 py-4">
 													<button
 														onClick={() => navigate(`/classroom/${res.classroomId}`)}
-														className="font-medium text-red-500 hover:text-red-600 hover:underline transition"
+														className="font-medium text-red-500 hover:underline"
 													>
 														{res.classroomName}
 													</button>
@@ -124,10 +142,17 @@ function MyReservationsPage() {
 													{slotTimes[res.slot]}
 												</td>
 
-												<td className="px-6 py-4">
+												<td className="px-6 py-4 flex gap-2">
+													<button
+														onClick={() => handleViewStudents(res.id)}
+														className="bg-gray-200 hover:bg-gray-300 text-gray-800 text-sm px-3 py-2 rounded-md"
+													>
+														Students
+													</button>
+
 													<button
 														onClick={() => handleCancel(res.id)}
-														className="bg-red-500 hover:bg-red-600 text-white text-sm font-medium px-4 py-2 rounded-md transition"
+														className="bg-red-500 hover:bg-red-600 text-white text-sm px-3 py-2 rounded-md"
 													>
 														Cancel
 													</button>
@@ -136,6 +161,46 @@ function MyReservationsPage() {
 										))}
 									</tbody>
 								</table>
+							</div>
+						)}
+
+						{selectedReservation && (
+							<div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+
+								<div className="bg-white rounded-lg shadow-xl w-full max-w-md p-6">
+
+									<h2 className="text-lg font-bold mb-4">
+										Students ({students.length})
+									</h2>
+
+									{students.length === 0 ? (
+										<p className="text-sm text-gray-400">
+											No students joined yet
+										</p>
+									) : (
+										<div className="max-h-60 overflow-y-auto border rounded-md p-2">
+											{students.map((s) => (
+												<div
+													key={s.id}
+													className="text-sm py-2 border-b last:border-none"
+												>
+													{s.email}
+												</div>
+											))}
+										</div>
+									)}
+
+									<div className="mt-4">
+										<button
+											onClick={closeModal}
+											className="w-full bg-gray-100 hover:bg-gray-200 py-2 rounded-md"
+										>
+											Close
+										</button>
+									</div>
+
+								</div>
+
 							</div>
 						)}
 
