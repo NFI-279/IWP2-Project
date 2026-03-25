@@ -50,7 +50,7 @@ public class ScheduleService {
 				}
 
 				if (reservation == null) {
-					slots.add(new SlotSchedule(slot, false, null, null, 0, 0, false));
+					slots.add(new SlotSchedule(slot, false, null, null, 0, 0, false, null, null));
 				} else {
 					slots.add(
 							new SlotSchedule(
@@ -60,8 +60,10 @@ public class ScheduleService {
 									reservation.getId(),
 									subscriptionRepository.countByReservationId(reservation.getId()),
 									reservation.getClassroom().getCapacity(),
-									subscriptionRepository
-											.existsByReservationIdAndStudentId(reservation.getId(), userId)));
+									subscriptionRepository.existsByReservationIdAndStudentId(reservation.getId(),
+											userId),
+									reservation.getCourseName(),
+									reservation.getDescription()));
 				}
 			}
 

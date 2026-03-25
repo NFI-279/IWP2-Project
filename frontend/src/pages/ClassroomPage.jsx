@@ -26,6 +26,9 @@ function ClassroomPage() {
 	const [week, setWeek] = useState(10);
 	const [modal, setModal] = useState(null);
 
+	const [courseName, setCourseName] = useState("");
+	const [description, setDescription] = useState("");
+
 	useEffect(() => {
 		loadSchedule();
 		const interval = setInterval(loadSchedule, 5000);
@@ -66,9 +69,13 @@ function ClassroomPage() {
 				classroomId: Number(classroomId),
 				weekNumber: Number(week),
 				dayOfWeek: days.indexOf(modal.day) + 1,
-				timeSlot: modal.slot
+				timeSlot: modal.slot,
+				courseName,
+				description
 			});
 			setModal(null);
+			setCourseName("");
+			setDescription("");
 			loadSchedule();
 		} catch {
 			alert("Reservation failed");
@@ -179,10 +186,26 @@ function ClassroomPage() {
 												</span>
 											)}
 
-											{reserved && user?.role === "TEACHER" && isMine && (
-												<span className="text-xs font-semibold">
-													Mine
-												</span>
+											{reserved && (
+												<div className="text-center px-1">
+
+													<div className="text-xs font-semibold truncate">
+														{cell.courseName || "Course"}
+													</div>
+
+													{user?.role === "STUDENT" && (
+														<div className="text-[10px] mt-1">
+															{cell.subscribedCount} / {cell.capacity}
+														</div>
+													)}
+
+													{user?.role === "TEACHER" && isMine && (
+														<div className="text-[10px] mt-1 opacity-80">
+															Mine
+														</div>
+													)}
+
+												</div>
 											)}
 
 										</div>
@@ -201,27 +224,31 @@ function ClassroomPage() {
 
 						<div className="bg-white rounded-xl shadow-2xl w-full max-w-md p-6 border border-gray-200">
 
-							<div className="mb-6">
+							{modal.type === "book" && (
+								<div className="mb-6">
+									<h2 className="text-xl font-bold text-gray-900">
+										Book Slot
+									</h2>
 
-								<h2 className="text-xl font-bold text-gray-900">
-									{modal.type === "book" ? "Book Slot" : "Reservation"}
-								</h2>
-
-								<p className="text-sm text-red-500 font-semibold mt-1">
-									{modal.day}, {slotTimes[modal.slot]}
-								</p>
-
-							</div>
+									<p className="text-sm text-red-500 font-semibold mt-1">
+										{modal.day}, {slotTimes[modal.slot]}
+									</p>
+								</div>
+							)}
 
 							{modal.type === "book" && (
 								<div className="flex flex-col gap-4">
 
 									<input
+										value={courseName}
+										onChange={(e) => setCourseName(e.target.value)}
 										placeholder="Course name"
 										className="w-full border border-gray-300 rounded-md px-4 py-3 focus:outline-none focus:ring-2 focus:ring-red-400"
 									/>
 
 									<textarea
+										value={description}
+										onChange={(e) => setDescription(e.target.value)}
 										placeholder="Description"
 										className="w-full border border-gray-300 rounded-md px-4 py-3 focus:outline-none focus:ring-2 focus:ring-red-400"
 									/>
@@ -250,21 +277,51 @@ function ClassroomPage() {
 							{modal.type === "info" && (
 								<div className="flex flex-col gap-4">
 
-									<p className="text-sm text-gray-700">
-										Booked by: <strong>{modal.cell.teacherName}</strong>
-									</p>
+									<div>
+										<h2 className="text-xl font-bold text-gray-900">
+											{modal.cell.courseName || "Course"}
+										</h2>
 
-									{user?.role === "STUDENT" && (
-										<p className="text-sm text-gray-600">
-											Students: {modal.cell.subscribedCount} / {modal.cell.capacity}
+										<p className="text-sm text-red-500 font-semibold mt-1">
+											{modal.day}, {slotTimes[modal.slot]}
 										</p>
-									)}
+									</div>
 
-									<div className="flex gap-3">
+									<div>
+										<p className="text-sm font-semibold text-gray-700">
+											Description
+										</p>
+
+										<p className="text-sm text-gray-600 mt-1 whitespace-pre-wrap break-words">
+											{modal.cell.description || "No description provided"}
+										</p>
+									</div>
+
+									<div className="flex flex-col gap-1 text-sm text-gray-700">
+
+										<div>
+											Teacher:{" "}
+											<span className="font-semibold">
+												{modal.cell.teacherName}
+											</span>
+										</div>
+
+										{user?.role === "STUDENT" && (
+											<div>
+												Students:{" "}
+												<span className="font-semibold">
+													{modal.cell.subscribedCount} / {modal.cell.capacity}
+												</span>
+											</div>
+										)}
+
+									</div>
+
+									<div className="flex gap-3 pt-3">
 
 										<button
 											onClick={() => setModal(null)}
-											className="flex-1 bg-gray-100 hover:bg-gray-200 py-3 rounded-md font-semibold"
+											className="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-800 py-3 rounded-md font-semibold"
 										>
 											Close
 										</button>

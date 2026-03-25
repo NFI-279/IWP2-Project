@@ -12,9 +12,19 @@ public class SlotSchedule {
 	private int capacity;
 	@JsonProperty("isSubscribed")
 	private boolean isSubscribed;
+	private String courseName;
+	private String description;
 
-	public SlotSchedule(int slot, boolean reserved, String teacherName, Long reservationId,
-			int subscribedCount, int capacity, boolean isSubscribed) {
+	public SlotSchedule(
+			int slot,
+			boolean reserved,
+			String teacherName,
+			Long reservationId,
+			int subscribedCount,
+			int capacity,
+			boolean isSubscribed,
+			String courseName,
+			String description) {
 		this.slot = slot;
 		this.reserved = reserved;
 		this.teacherName = teacherName;
@@ -22,6 +32,8 @@ public class SlotSchedule {
 		this.subscribedCount = subscribedCount;
 		this.capacity = capacity;
 		this.isSubscribed = isSubscribed;
+		this.courseName = courseName;
+		this.description = description;
 	}
 
 	public int getSlot() {
@@ -50,5 +62,13 @@ public class SlotSchedule {
 
 	public boolean isSubscribed() {
 		return isSubscribed;
+	}
+
+	public String getCourseName() {
+		return courseName;
+	}
+
+	public String getDescription() {
+		return description;
 	}
 }

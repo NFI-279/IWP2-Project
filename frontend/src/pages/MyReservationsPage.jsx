@@ -39,6 +39,7 @@ function MyReservationsPage() {
 
 		try {
 			await deleteReservation(id);
+			closeModal();
 			loadReservations();
 		} catch (err) {
 			console.error("Cancel failed", err);
@@ -104,6 +105,12 @@ function MyReservationsPage() {
 												Classroom
 											</th>
 											<th className="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider text-gray-500">
+												Course
+											</th>
+											<th className="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider text-gray-500">
+												Description
+											</th>
+											<th className="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider text-gray-500">
 												Week
 											</th>
 											<th className="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider text-gray-500">
@@ -111,6 +118,9 @@ function MyReservationsPage() {
 											</th>
 											<th className="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider text-gray-500">
 												Time
+											</th>
+											<th className="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider text-gray-500">
+												Students
 											</th>
 											<th className="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider text-gray-500">
 												Action
@@ -130,6 +140,17 @@ function MyReservationsPage() {
 													</button>
 												</td>
 
+												<td className="px-6 py-4 font-semibold text-gray-800">
+													{res.courseName}
+												</td>
+
+												<td
+													className="px-6 py-4 text-gray-600 max-w-xs truncate"
+													title={res.description}
+												>
+													{res.description || "—"}
+												</td>
+
 												<td className="px-6 py-4 text-gray-700">
 													{res.week}
 												</td>
@@ -142,20 +163,28 @@ function MyReservationsPage() {
 													{slotTimes[res.slot]}
 												</td>
 
-												<td className="px-6 py-4 flex gap-2">
-													<button
-														onClick={() => handleViewStudents(res.id)}
-														className="bg-gray-200 hover:bg-gray-300 text-gray-800 text-sm px-3 py-2 rounded-md"
-													>
-														Students
-													</button>
+												<td className="px-6 py-4 text-gray-700 font-medium">
+													{(res.subscribedCount ?? 0)} / {(res.capacity ?? 0)}
+												</td>
 
-													<button
-														onClick={() => handleCancel(res.id)}
-														className="bg-red-500 hover:bg-red-600 text-white text-sm px-3 py-2 rounded-md"
-													>
-														Cancel
-													</button>
+												<td className="px-6 py-4">
+													<div className="flex flex-col gap-2">
+
+														<button
+															onClick={() => handleViewStudents(res.id)}
+															className="w-full bg-gray-200 hover:bg-gray-300 text-gray-800 text-sm py-2 rounded-md"
+														>
+															View Students
+														</button>
+
+														<button
+															onClick={() => handleCancel(res.id)}
+															className="w-full bg-red-500 hover:bg-red-600 text-white text-sm py-2 rounded-md"
+														>
+															Cancel Reservation
+														</button>
+
+													</div>
 												</td>
 											</tr>
 										))}

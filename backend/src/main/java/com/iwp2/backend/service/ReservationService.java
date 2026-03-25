@@ -17,13 +17,16 @@ public class ReservationService {
 	private final ReservationRepository reservationRepository;
 	private final UserRepository userRepository;
 	private final ClassroomRepository classroomRepository;
+	private final ReservationSubscriptionRepository subscriptionRepository;
 
 	public ReservationService(ReservationRepository reservationRepository,
 			UserRepository userRepository,
-			ClassroomRepository classroomRepository) {
+			ClassroomRepository classroomRepository,
+			ReservationSubscriptionRepository subscriptionRepository) {
 		this.reservationRepository = reservationRepository;
 		this.userRepository = userRepository;
 		this.classroomRepository = classroomRepository;
+		this.subscriptionRepository = subscriptionRepository;
 	}
 
 	@Transactional
@@ -43,6 +46,10 @@ public class ReservationService {
 			throw new RuntimeException("Invalid slot");
 		}
 
+		if (request.getCourseName() == null || request.getCourseName().isBlank()) {
+			throw new RuntimeException("Course name is required");
+		}
+
 		Day day = Day.fromValue(request.getDayOfWeek());
 
 		Reservation reservation = new Reservation();
@@ -51,6 +58,8 @@ public class ReservationService {
 		reservation.setWeekNumber(request.getWeekNumber());
 		reservation.setDay(day);
 		reservation.setTimeSlot(request.getTimeSlot());
+		reservation.setCourseName(request.getCourseName());
+		reservation.setDescription(request.getDescription());
 
 		return reservationRepository.save(reservation);
 	}
@@ -79,7 +88,9 @@ public class ReservationService {
 
 		return reservationRepository.findAll()
 				.stream()
-				.map(ReservationResponse::new)
+				.map(r -> new ReservationResponse(
+						r,
+						subscriptionRepository.countByReservationId(r.getId())))
 				.toList();
 	}
 
@@ -87,7 +98,9 @@ public class ReservationService {
 
 		return reservationRepository.findByTeacher_Email(email)
 				.stream()
-				.map(ReservationResponse::new)
+				.map(r -> new ReservationResponse(
+						r,
+						subscriptionRepository.countByReservationId(r.getId())))
 				.toList();
 	}
 
@@ -96,7 +109,9 @@ public class ReservationService {
 		return reservationRepository
 				.findByTeacher_EmailAndWeekNumber(email, week)
 				.stream()
-				.map(ReservationResponse::new)
+				.map(r -> new ReservationResponse(
+						r,
+						subscriptionRepository.countByReservationId(r.getId())))
 				.toList();
 	}
 

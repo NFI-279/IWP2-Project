@@ -30,6 +30,12 @@ public class Reservation {
 	@Column(name = "time_slot", nullable = false)
 	private Integer timeSlot;
 
+	@Column(name = "course_name", nullable = false)
+	private String courseName;
+
+	@Column(name = "description")
+	private String description;
+
 	@Column(name = "created_at", nullable = false, updatable = false)
 	private LocalDateTime createdAt;
 
@@ -80,6 +86,22 @@ public class Reservation {
 
 	public void setTimeSlot(Integer timeSlot) {
 		this.timeSlot = timeSlot;
+	}
+
+	public String getCourseName() {
+		return courseName;
+	}
+
+	public void setCourseName(String courseName) {
+		this.courseName = courseName;
+	}
+
+	public String getDescription() {
+		return description;
+	}
+
+	public void setDescription(String description) {
+		this.description = description;
 	}
 
 	public LocalDateTime getCreatedAt() {
