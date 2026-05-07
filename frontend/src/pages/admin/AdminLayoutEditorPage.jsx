@@ -252,7 +252,7 @@ function AdminLayoutEditorPage() {
 
 				{floor && (
 					<img
-						src={`http://localhost:8081${floor.imagePath}`}
+						src={`http://localhost:8080${floor.imagePath}`}
 						alt="Floor"
 						className="w-full select-none pointer-events-none"
 					/>

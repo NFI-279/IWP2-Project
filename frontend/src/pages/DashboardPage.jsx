@@ -64,7 +64,7 @@ function DashboardPage() {
 										className="absolute inset-0 bg-cover bg-center group-hover:scale-105 transition duration-300"
 										style={{
 											backgroundImage:
-												`url(http://localhost:8081${building.imagePath})`
+												`url(http://localhost:8080${building.imagePath})`
 										}}
 									/>
 

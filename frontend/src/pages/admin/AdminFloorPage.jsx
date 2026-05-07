@@ -120,7 +120,7 @@ function AdminFloorPage() {
 					>
 						{floor.imagePath && (
 							<img
-								src={`http://localhost:8081${floor.imagePath}`}
+								src={`http://localhost:8080${floor.imagePath}`}
 								alt={floor.name}
 								className="w-full h-48 object-cover"
 							/>

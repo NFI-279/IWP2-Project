@@ -126,7 +126,7 @@ function AdminBuildingPage() {
 						{/* Image */}
 						{building.imagePath && (
 							<img
-								src={`http://localhost:8081${building.imagePath}`}
+								src={`http://localhost:8080${building.imagePath}`}
 								alt={building.name}
 								className="w-full h-40 object-cover"
 							/>
