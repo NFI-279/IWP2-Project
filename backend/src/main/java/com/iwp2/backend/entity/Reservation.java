@@ -1,8 +1,10 @@
 package com.iwp2.backend.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.iwp2.backend.model.Day;
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @Table(name = "reservations")
@@ -107,4 +109,8 @@ public class Reservation {
 	public LocalDateTime getCreatedAt() {
 		return createdAt;
 	}
+
+	@OneToMany(mappedBy = "reservation", cascade = CascadeType.ALL, orphanRemoval = true)
+	@JsonIgnore
+	private List<ReservationSubscription> subscriptions;
 }

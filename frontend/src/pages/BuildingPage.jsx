@@ -60,25 +60,37 @@ function BuildingPage() {
 						<div
 							key={floor.id}
 							onClick={() => navigate(`/floor/${floor.id}`)}
-							className="bg-surface rounded-lg shadow-soft p-6 cursor-pointer transition hover:-translate-y-1 hover:shadow-lg flex items-center justify-between"
+							className="bg-surface rounded-xl overflow-hidden shadow-soft cursor-pointer transition hover:-translate-y-1 hover:shadow-lg"
 						>
 
-							{/* LEFT */}
-							<div>
+							{/* FLOOR IMAGE */}
+							{floor.imagePath && (
+								<img
+									src={`http://localhost:8080${floor.imagePath}`}
+									alt={floor.name}
+									className="w-full h-48 object-cover"
+								/>
+							)}
 
-								<h3 className="text-lg font-bold text-text-main">
-									{floor.name}
-								</h3>
+							{/* CONTENT */}
+							<div className="p-5 flex items-center justify-between">
 
-								<p className="text-sm text-muted mt-1">
-									{floor.classrooms?.length ?? 0} classrooms
-								</p>
+								<div>
 
-							</div>
+									<h3 className="text-lg font-bold text-text-main">
+										{floor.name}
+									</h3>
 
-							{/* RIGHT ICON */}
-							<div className="text-muted group-hover:text-primary transition">
-								→
+									<p className="text-sm text-muted mt-1">
+										{floor.classrooms?.length ?? 0} classrooms
+									</p>
+
+								</div>
+
+								<div className="text-muted transition">
+									→
+								</div>
+
 							</div>
 
 						</div>

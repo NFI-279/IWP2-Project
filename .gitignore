@@ -33,4 +33,5 @@ yarn-error.log*
 .env.local
 
 # uploaded floor maps
-uploads/
+backend/uploads/*
+!backend/uploads/.gitkeep

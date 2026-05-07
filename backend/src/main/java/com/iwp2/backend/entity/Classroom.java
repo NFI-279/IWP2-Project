@@ -3,6 +3,7 @@ package com.iwp2.backend.entity;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import java.util.List;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
@@ -37,4 +38,8 @@ public class Classroom {
 
 	@Column(name = "bottom_right_y", nullable = false)
 	private Double bottomRightY;
+
+	@OneToMany(mappedBy = "classroom", cascade = CascadeType.ALL, orphanRemoval = true)
+	@JsonIgnore
+	private List<Reservation> reservations;
 }

@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { getBuildings } from "../../api/buildingApi";
 import { createBuilding, deleteBuilding } from "../../api/adminApi";
+import DeleteConfirmModal from "../../components/DeleteConfirmModal";
 
 function AdminBuildingPage() {
 	const navigate = useNavigate();
@@ -10,6 +11,8 @@ function AdminBuildingPage() {
 	const [name, setName] = useState("");
 	const [file, setFile] = useState(null);
 	const [submitting, setSubmitting] = useState(false);
+	const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+	const [selectedBuildingId, setSelectedBuildingId] = useState(null);
 
 	useEffect(() => {
 		loadBuildings();
@@ -53,16 +56,22 @@ function AdminBuildingPage() {
 		}
 	};
 
-	const handleDelete = async (id) => {
-		const confirmDelete = window.confirm("Delete this building?");
-		if (!confirmDelete) return;
+	const handleDelete = (id) => {
+		setSelectedBuildingId(id);
+		setDeleteModalOpen(true);
+	};
 
+	const confirmDelete = async () => {
+		if (selectedBuildingId === null) return;
 		try {
-			await deleteBuilding(id);
+			await deleteBuilding(selectedBuildingId);
 			await loadBuildings();
 		} catch (err) {
 			console.error("Delete building failed", err);
 			alert(err.response?.data || "Delete failed");
+		} finally {
+			setDeleteModalOpen(false);
+			setSelectedBuildingId(null);
 		}
 	};
 
@@ -166,6 +175,23 @@ function AdminBuildingPage() {
 				))}
 
 			</div>
+			<DeleteConfirmModal
+				isOpen={deleteModalOpen}
+				title="Delete Building"
+				message={`This will permanently remove all:
+
+• floors
+• classrooms
+• reservations
+• student subscriptions
+
+This action cannot be undone.`}
+				onCancel={() => {
+					setDeleteModalOpen(false);
+					setSelectedBuildingId(null);
+				}}
+				onConfirm={confirmDelete}
+			/>
 
 		</div>
 	);

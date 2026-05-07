@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { getFloors } from "../../api/floorApi";
 import { uploadFloor, deleteFloor } from "../../api/adminApi";
+import DeleteConfirmModal from "../../components/DeleteConfirmModal";
 
 function AdminFloorPage() {
 	const { buildingId } = useParams();
@@ -11,6 +12,8 @@ function AdminFloorPage() {
 	const [name, setName] = useState("");
 	const [file, setFile] = useState(null);
 	const [uploading, setUploading] = useState(false);
+	const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+	const [selectedFloorId, setSelectedFloorId] = useState(null);
 
 	useEffect(() => {
 		loadFloors();
@@ -54,16 +57,22 @@ function AdminFloorPage() {
 		}
 	};
 
-	const handleDelete = async (id) => {
-		const confirmDelete = window.confirm("Delete this floor?");
-		if (!confirmDelete) return;
+	const handleDelete = (id) => {
+		setSelectedFloorId(id);
+		setDeleteModalOpen(true);
+	};
 
+	const confirmDelete = async () => {
+		if (selectedFloorId === null) return;
 		try {
-			await deleteFloor(id);
+			await deleteFloor(selectedFloorId);
 			await loadFloors();
 		} catch (err) {
 			console.error("Delete floor failed", err);
 			alert(err.response?.data || "Delete failed");
+		} finally {
+			setDeleteModalOpen(false);
+			setSelectedFloorId(null);
 		}
 	};
 
@@ -150,6 +159,22 @@ function AdminFloorPage() {
 					</div>
 				))}
 			</div>
+			<DeleteConfirmModal
+				isOpen={deleteModalOpen}
+				title="Delete Floor"
+				message={`This will permanently remove all:
+
+• classrooms
+• reservations
+• student subscriptions
+
+This action cannot be undone.`}
+				onCancel={() => {
+					setDeleteModalOpen(false);
+					setSelectedBuildingId(null);
+				}}
+				onConfirm={confirmDelete}
+			/>
 		</div>
 	);
 }

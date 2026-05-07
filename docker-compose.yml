@@ -25,6 +25,8 @@ services:
       SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/campus_db
       SPRING_DATASOURCE_USERNAME: campus_user
       SPRING_DATASOURCE_PASSWORD: campus_pass
+    volumes:
+      - ./backend/uploads:/app/uploads
 
   frontend:
     build: ./frontend
