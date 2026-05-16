@@ -56,7 +56,7 @@ public class ScheduleService {
 							new SlotSchedule(
 									slot,
 									true,
-									reservation.getTeacher().getEmail(),
+									reservation.getTeacher().getName(),
 									reservation.getId(),
 									subscriptionRepository.countByReservationId(reservation.getId()),
 									reservation.getClassroom().getCapacity(),
