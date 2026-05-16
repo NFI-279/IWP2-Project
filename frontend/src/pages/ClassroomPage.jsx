@@ -8,12 +8,12 @@ import Navbar from "../components/Navbar";
 const days = ["MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY", "SATURDAY", "SUNDAY"];
 
 const slotTimes = {
-	1: "08:00–10:00",
-	2: "10:00–12:00",
-	3: "12:00–14:00",
-	4: "14:00–16:00",
-	5: "16:00–18:00",
-	6: "18:00–20:00"
+	1: "08:00 - 10:00",
+	2: "10:00 - 12:00",
+	3: "12:00 - 14:00",
+	4: "14:00 - 16:00",
+	5: "16:00 - 18:00",
+	6: "18:00 - 20:00"
 };
 
 function ClassroomPage() {
@@ -119,16 +119,34 @@ function ClassroomPage() {
 			<div className="bg-gray-50 min-h-screen px-6 py-10">
 
 				<div className="max-w-7xl mx-auto mb-6">
-					<button
-						onClick={() => navigate(-1)}
-						className="mb-6 inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-100 hover:text-red-500 transition"
-					>
-						<span className="transition group-hover:-translate-x-1">
-							←
-						</span>
-						Back
-					</button>
-
+					<div className="flex items-center justify-between mb-6">
+						<button
+							onClick={() => navigate(-1)}
+							className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-100 hover:text-red-500 transition"
+						>
+							<span className="transition group-hover:-translate-x-1">
+								←
+							</span>
+							Back
+						</button>
+						<div className="flex items-center gap-3">
+							<button
+								onClick={() => setWeek(prev => Math.max(1, prev - 1))}
+								className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-100 hover:text-red-500 transition"
+							>
+								←
+							</button>
+							<div className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md">
+								Week {week}
+							</div>
+							<button
+								onClick={() => setWeek(prev => prev + 1)}
+								className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-100 hover:text-red-500 transition"
+							>
+								→
+							</button>
+						</div>
+					</div>
 					<h2 className="text-3xl font-extrabold text-gray-900">
 						Classroom Schedule
 					</h2>
@@ -160,9 +178,12 @@ function ClassroomPage() {
 									let classes = "h-24 rounded-xl flex items-center justify-center transition";
 
 									if (!reserved) {
-										classes += " border-2 border-dashed border-gray-300 hover:border-red-400 hover:bg-red-50 cursor-pointer";
-									}
-									else if (isMine) {
+										if (user?.role === "TEACHER") {
+											classes += " border-2 border-dashed border-gray-300 hover:border-red-400 hover:bg-red-50 cursor-pointer";
+										} else {
+											classes += " border-2 border-dashed border-gray-300";
+										}
+									} else if (isMine) {
 										classes += " bg-red-500 text-white shadow-md cursor-pointer";
 									} else {
 										classes += " bg-red-100 border border-red-200 text-red-400 cursor-pointer";
@@ -172,17 +193,15 @@ function ClassroomPage() {
 										<div
 											key={day}
 											className={classes}
-											onClick={() => handleClick(day, slot, cell)}
+											onClick={() => {
+												if (reserved || user?.role === "TEACHER") {
+													handleClick(day, slot, cell);
+												}
+											}}
 										>
-											{!reserved && (
+											{!reserved && user?.role === "TEACHER" && (
 												<span className="text-red-400 text-xs opacity-0 hover:opacity-100 transition">
 													Book
-												</span>
-											)}
-
-											{reserved && user?.role === "STUDENT" && (
-												<span className="text-[10px]">
-													{cell.subscribedCount} / {cell.capacity}
 												</span>
 											)}
 
@@ -283,7 +302,7 @@ function ClassroomPage() {
 										</h2>
 
 										<p className="text-sm text-red-500 font-semibold mt-1">
-											{modal.day}, {slotTimes[modal.slot]}
+    										WEEK {week}, {modal.day}, {slotTimes[modal.slot]}
 										</p>
 									</div>
 
