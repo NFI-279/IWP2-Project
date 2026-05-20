@@ -7,6 +7,7 @@ function ProfilePage() {
 
 	const navigate = useNavigate();
 	const [user, setUser] = useState(null);
+	const [dashboard, setDashboard] = useState(null);
 
 	useEffect(() => {
 		loadUser();
@@ -16,17 +17,21 @@ function ProfilePage() {
 		try {
 			const res = await api.get("/auth/me");
 			setUser(res.data);
+			const dashboardRes = await api.get("/profile/dashboard");
+			setDashboard(dashboardRes.data);
 		} catch (err) {
 			console.error("Failed to load profile", err);
 		}
 	};
 
-	if (!user) {
+	if (!user || !dashboard) {
 		return (
 			<>
 				<Navbar />
 				<div className="min-h-screen flex items-center justify-center bg-gray-50">
-					<p className="text-gray-500">Loading...</p>
+					<p className="text-gray-500">
+						Loading...
+					</p>
 				</div>
 			</>
 		);
@@ -49,8 +54,8 @@ function ProfilePage() {
 
 			<div className="min-h-screen bg-gray-50 px-6 py-10">
 
-				{/* HEADER */}
-				<div className="max-w-4xl mx-auto mb-8">
+				{/* PAGE HEADER */}
+				<div className="max-w-5xl mx-auto mb-8">
 
 					<button
 						onClick={() => navigate(-1)}
@@ -67,21 +72,131 @@ function ProfilePage() {
 					</h2>
 
 					<p className="text-gray-500">
-						Your account details
+						Your account dashboard
 					</p>
 
 				</div>
 
-				{/* CARD */}
-				<div className="max-w-4xl mx-auto">
+				{/* MAIN CONTENT */}
+				<div className="max-w-5xl mx-auto space-y-6">
 
-					<div className="bg-white border border-gray-200 rounded-lg shadow-sm p-8">
+					{/* PROFILE HEADER */}
+					<div className="bg-white border border-gray-200 rounded-xl shadow-sm p-8">
+
+						<div className="flex items-center gap-6">
+
+							{/* AVATAR */}
+							<div className="w-24 h-24 rounded-full bg-red-500 flex items-center justify-center text-white text-3xl font-bold">
+
+								{user.name
+									.split(" ")
+									.map(word => word[0])
+									.join("")
+									.slice(0, 2)}
+
+							</div>
+
+							{/* USER INFO */}
+							<div>
+
+								<h3 className="text-3xl font-bold tracking-tight text-gray-800">
+									{user.name}
+								</h3>
+
+								<p className="text-gray-500 mt-1">
+									{user.email}
+								</p>
+
+								<span className={`inline-block mt-3 px-4 py-1 rounded-full text-sm font-medium ${getRoleBadge(user.role)}`}>
+									{user.role}
+								</span>
+
+							</div>
+
+						</div>
+
+					</div>
+
+					{/* STATS */}
+					<div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+
+						{dashboard.stats.map((stat, index) => (
+
+							<div
+								key={index}
+								className="bg-white border border-gray-200 rounded-xl shadow-sm p-6 hover:shadow-md transition"
+							>
+
+								<p className="text-sm text-gray-500 mb-2">
+									{stat.label}
+								</p>
+
+								<h3 className="text-3xl font-bold tracking-tight text-gray-800">
+									{stat.value}
+								</h3>
+
+							</div>
+
+						))}
+
+					</div>
+
+					{/* RECENT ACTIVITY */}
+					<div className="bg-white border border-gray-200 rounded-xl shadow-sm p-8">
+
+						<h3 className="text-xl font-bold text-gray-800 mb-6">
+							Recent Activity
+						</h3>
+
+						{dashboard.recentActivity.length === 0 ? (
+
+							<p className="text-gray-500">
+								No recent activity yet.
+							</p>
+
+						) : (
+
+							<div className="space-y-4">
+
+								{dashboard.recentActivity.map((item, index) => (
+
+									<div
+										key={index}
+										className="flex items-center gap-3 border-b border-gray-100 pb-3 last:border-none"
+									>
+
+										<div className="w-2 h-2 rounded-full bg-red-500"></div>
+
+										<p className="text-gray-700">
+											{item}
+										</p>
+
+									</div>
+
+								))}
+
+							</div>
+
+						)}
+
+					</div>
+
+					{/* ACCOUNT INFO */}
+					<div className="bg-white border border-gray-200 rounded-xl shadow-sm p-8">
+
+						<h3 className="text-xl font-bold text-gray-800 mb-6">
+							Account Information
+						</h3>
 
 						<div className="space-y-6">
 
 							{/* NAME */}
 							<div>
-								<p className="text-sm text-gray-500">Name</p>
+
+								<p className="text-sm text-gray-500">
+									Name
+								</p>
+
 								<p className="text-lg font-semibold text-gray-800">
 									{user.name}
 								</p>
@@ -89,7 +204,11 @@ function ProfilePage() {
 
 							{/* EMAIL */}
 							<div>
-								<p className="text-sm text-gray-500">Email</p>
+
+								<p className="text-sm text-gray-500">
+									Email
+								</p>
+
 								<p className="text-lg font-semibold text-gray-800">
 									{user.email}
 								</p>
@@ -97,7 +216,11 @@ function ProfilePage() {
 
 							{/* ROLE */}
 							<div>
-								<p className="text-sm text-gray-500 mb-1">Role</p>
+
+								<p className="text-sm text-gray-500 mb-1">
+									Role
+								</p>
+
 								<span className={`inline-block px-3 py-1 rounded-full text-sm font-medium ${getRoleBadge(user.role)}`}>
 									{user.role}
 								</span>

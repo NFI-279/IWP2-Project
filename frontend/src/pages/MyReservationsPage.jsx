@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Navbar from "../components/Navbar";
+import DeleteConfirmModal from "../components/DeleteConfirmModal";
 import { getMyReservations, deleteReservation, getStudentsForReservation } from "../api/reservationApi";
 
 const slotTimes = {
@@ -19,6 +20,8 @@ function MyReservationsPage() {
 
 	const [students, setStudents] = useState([]);
 	const [selectedReservation, setSelectedReservation] = useState(null);
+	const [showDeleteModal, setShowDeleteModal] = useState(false);
+	const [reservationToDelete, setReservationToDelete] = useState(null);
 
 	useEffect(() => {
 		loadReservations();
@@ -33,16 +36,21 @@ function MyReservationsPage() {
 		}
 	};
 
-	const handleCancel = async (id) => {
-		const confirmCancel = window.confirm("Cancel this reservation?");
-		if (!confirmCancel) return;
+	const handleCancelClick = (id) => {
+		setReservationToDelete(id);
+		setShowDeleteModal(true);
+	};
 
+	const confirmCancelReservation = async () => {
 		try {
-			await deleteReservation(id);
+			await deleteReservation(reservationToDelete);
 			closeModal();
 			loadReservations();
 		} catch (err) {
 			console.error("Cancel failed", err);
+		} finally {
+			setShowDeleteModal(false);
+			setReservationToDelete(null);
 		}
 	};
 
@@ -130,7 +138,12 @@ function MyReservationsPage() {
 
 									<tbody className="divide-y divide-gray-200 bg-white">
 										{reservations.map((res) => (
-											<tr key={res.id} className="hover:bg-gray-50 transition">
+
+											<tr
+												key={res.id}
+												className="hover:bg-gray-50 transition"
+											>
+
 												<td className="px-6 py-4">
 													<button
 														onClick={() => navigate(`/classroom/${res.classroomId}`)}
@@ -178,7 +191,7 @@ function MyReservationsPage() {
 														</button>
 
 														<button
-															onClick={() => handleCancel(res.id)}
+															onClick={() => handleCancelClick(res.id)}
 															className="w-full bg-red-500 hover:bg-red-600 text-white text-sm py-2 rounded-md"
 														>
 															Cancel Reservation
@@ -193,6 +206,7 @@ function MyReservationsPage() {
 							</div>
 						)}
 
+						{/* STUDENTS MODAL */}
 						{selectedReservation && (
 							<div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
 
@@ -237,9 +251,24 @@ function MyReservationsPage() {
 				</div>
 
 			</div>
+
+			{/* DELETE MODAL */}
+			<DeleteConfirmModal
+				isOpen={showDeleteModal}
+				title="Cancel Reservation"
+				message="Are you sure you want to cancel this reservation?
+
+This action cannot be undone and all subscribed students will lose access to this session."
+				confirmText="Cancel Reservation"
+				onCancel={() => {
+					setShowDeleteModal(false);
+					setReservationToDelete(null);
+				}}
+				onConfirm={confirmCancelReservation}
+			/>
+
 		</>
 	);
-
 }
 
 export default MyReservationsPage;

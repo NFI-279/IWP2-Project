@@ -3,7 +3,8 @@ function DeleteConfirmModal({
 	title,
 	message,
 	onCancel,
-	onConfirm
+	onConfirm,
+	confirmText = "Delete"
 }) {
 
 	if (!isOpen) return null;
@@ -51,7 +52,7 @@ function DeleteConfirmModal({
 						onClick={onConfirm}
 						className="flex-1 py-3 rounded-xl bg-red-500 text-white font-semibold hover:bg-red-600 transition"
 					>
-						Delete
+						{confirmText}
 					</button>
 
 				</div>
