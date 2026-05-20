@@ -26,17 +26,6 @@ export const unsubscribeFromReservation = async (reservationId, studentId) => {
   });
 };
 
-export const getReservationStudents = async (reservationId) => {
-    const res = await fetch(`/reservations/${reservationId}/students`, {
-        credentials: "include"
-    });
-
-    if (!res.ok) {
-        throw new Error("Failed to fetch students");
-    }
-
-    return res.json();
-};
 
 export async function getMySubscriptions(studentId) {
   const res = await api.get(`/reservations/subscriptions/my?studentId=${studentId}`);

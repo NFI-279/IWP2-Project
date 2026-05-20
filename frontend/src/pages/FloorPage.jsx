@@ -101,8 +101,12 @@ function FloorPage() {
 									<div className="w-full h-full border-2 border-primary bg-primary/10 group-hover:bg-primary/20 transition rounded-sm" />
 
 									{/* TOOLTIP */}
-									<div className="absolute -top-7 left-1/2 -translate-x-1/2 bg-text-main text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition whitespace-nowrap">
-										{room.name}
+									<div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition pointer-events-none">
+
+										<div className="bg-black/70 text-white text-xs px-2 py-1 rounded whitespace-nowrap">
+											{room.name}
+										</div>
+
 									</div>
 
 								</div>

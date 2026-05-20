@@ -334,15 +334,24 @@ function AdminLayoutEditorPage() {
 
 								setModal({ type: "edit-room" });
 							}}
-							className="absolute border-2 border-red-500 cursor-move hover:bg-red-200/30"
+							className="absolute group border-2 border-red-500 cursor-move hover:bg-red-200/30"
 							style={{
 								left: `${room.topLeftX}%`,
 								top: `${room.topLeftY}%`,
 								width: `${width}%`,
 								height: `${height}%`
 							}}
-							title={room.name}
-						/>
+						>
+
+							<div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition pointer-events-none">
+
+								<div className="bg-black/70 text-white text-xs px-2 py-1 rounded whitespace-nowrap">
+									{room.name}
+								</div>
+
+							</div>
+
+						</div>
 					);
 				})}
 

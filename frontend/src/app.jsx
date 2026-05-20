@@ -77,11 +77,32 @@ function App() {
 					<Route path="analytics" element={<AdminAnalyticsPage />} />
 				</Route>
 
-				<Route path="/my-classes" element={<MySubscriptionsPage />} />
+				<Route
+					path="/my-classes"
+					element={
+						<ProtectedRoute>
+							<MySubscriptionsPage />
+						</ProtectedRoute>
+					}
+				/>
 
-				<Route path="/my-reservations" element={<MyReservationsPage />} />
+				<Route
+					path="/my-reservations"
+					element={
+						<ProtectedRoute>
+							<MyReservationsPage />
+						</ProtectedRoute>
+					}
+				/>
 
-				<Route path="/profile" element={<ProfilePage />} />
+				<Route
+					path="/profile"
+					element={
+						<ProtectedRoute>
+							<ProfilePage />
+						</ProtectedRoute>
+					}
+				/>
 
 			</Routes>
 		</BrowserRouter>

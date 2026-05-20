@@ -33,8 +33,9 @@ function RegisterPage() {
 				role
 			});
 
-			alert("Account created!");
-			navigate("/login");
+			navigate("/login", {
+				state: { success: "Account created successfully!" }
+			});
 
 		} catch {
 
@@ -63,7 +64,7 @@ function RegisterPage() {
 					</h1>
 
 					<p className="text-slate-500 mb-8">
-						Register for CampusView
+						Register for Spotix
 					</p>
 
 					{error && (

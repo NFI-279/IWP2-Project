@@ -14,6 +14,7 @@ function AdminFloorPage() {
 	const [uploading, setUploading] = useState(false);
 	const [deleteModalOpen, setDeleteModalOpen] = useState(false);
 	const [selectedFloorId, setSelectedFloorId] = useState(null);
+	const [feedbackModal, setFeedbackModal] = useState(null);
 
 	useEffect(() => {
 		loadFloors();
@@ -30,7 +31,10 @@ function AdminFloorPage() {
 
 	const handleUpload = async () => {
 		if (!name.trim() || !file) {
-			alert("Floor name and image required");
+			setFeedbackModal({
+				title: "Missing Information",
+				message: "Floor name and image are required."
+			});
 			return;
 		}
 
@@ -51,7 +55,10 @@ function AdminFloorPage() {
 			await loadFloors();
 		} catch (err) {
 			console.error("Upload failed", err);
-			alert(err.response?.data || "Upload failed");
+			setFeedbackModal({
+				title: "Upload Failed",
+				message: err.response?.data || "Failed to upload floor."
+			});
 		} finally {
 			setUploading(false);
 		}
@@ -69,7 +76,10 @@ function AdminFloorPage() {
 			await loadFloors();
 		} catch (err) {
 			console.error("Delete floor failed", err);
-			alert(err.response?.data || "Delete failed");
+			setFeedbackModal({
+				title: "Delete Failed",
+				message: err.response?.data || "Failed to delete floor."
+			});
 		} finally {
 			setDeleteModalOpen(false);
 			setSelectedFloorId(null);
@@ -171,10 +181,21 @@ function AdminFloorPage() {
 This action cannot be undone.`}
 				onCancel={() => {
 					setDeleteModalOpen(false);
-					setSelectedBuildingId(null);
+					setSelectedFloorId(null);
 				}}
 				onConfirm={confirmDelete}
 			/>
+
+			<DeleteConfirmModal
+				isOpen={!!feedbackModal}
+				title={feedbackModal?.title}
+				message={feedbackModal?.message}
+				confirmText="OK"
+				hideCancelButton={true}
+				onCancel={() => setFeedbackModal(null)}
+				onConfirm={() => setFeedbackModal(null)}
+			/>
+
 		</div>
 	);
 }

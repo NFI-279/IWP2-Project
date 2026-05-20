@@ -13,6 +13,7 @@ function AdminBuildingPage() {
 	const [submitting, setSubmitting] = useState(false);
 	const [deleteModalOpen, setDeleteModalOpen] = useState(false);
 	const [selectedBuildingId, setSelectedBuildingId] = useState(null);
+	const [feedbackModal, setFeedbackModal] = useState(null);
 
 	useEffect(() => {
 		loadBuildings();
@@ -29,7 +30,10 @@ function AdminBuildingPage() {
 
 	const handleCreate = async () => {
 		if (!name.trim() || !file) {
-			alert("Building name and image required");
+			setFeedbackModal({
+				title: "Missing Information",
+				message: "Building name and image are required."
+			});
 			return;
 		}
 
@@ -50,7 +54,10 @@ function AdminBuildingPage() {
 			await loadBuildings();
 		} catch (err) {
 			console.error("Create building failed", err);
-			alert(err.response?.data || "Failed to create building");
+			setFeedbackModal({
+				title: "Create Building Failed",
+				message: err.response?.data || "Failed to create building."
+			});
 		} finally {
 			setSubmitting(false);
 		}
@@ -68,7 +75,10 @@ function AdminBuildingPage() {
 			await loadBuildings();
 		} catch (err) {
 			console.error("Delete building failed", err);
-			alert(err.response?.data || "Delete failed");
+			setFeedbackModal({
+				title: "Delete Failed",
+				message: err.response?.data || "Failed to delete building."
+			});
 		} finally {
 			setDeleteModalOpen(false);
 			setSelectedBuildingId(null);
@@ -191,6 +201,16 @@ This action cannot be undone.`}
 					setSelectedBuildingId(null);
 				}}
 				onConfirm={confirmDelete}
+			/>
+
+			<DeleteConfirmModal
+				isOpen={!!feedbackModal}
+				title={feedbackModal?.title}
+				message={feedbackModal?.message}
+				confirmText="OK"
+				hideCancelButton={true}
+				onCancel={() => setFeedbackModal(null)}
+				onConfirm={() => setFeedbackModal(null)}
 			/>
 
 		</div>

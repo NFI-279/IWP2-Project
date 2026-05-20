@@ -4,6 +4,7 @@ import { getClassroomSchedule } from "../api/scheduleApi";
 import { createReservation, deleteReservation, subscribeToReservation, unsubscribeFromReservation } from "../api/reservationApi";
 import { useAuth } from "../context/AuthContext";
 import Navbar from "../components/Navbar";
+import DeleteConfirmModal from "../components/DeleteConfirmModal";
 
 const days = ["MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY", "SATURDAY", "SUNDAY"];
 
@@ -28,6 +29,8 @@ function ClassroomPage() {
 
 	const [courseName, setCourseName] = useState("");
 	const [description, setDescription] = useState("");
+
+	const [feedbackModal, setFeedbackModal] = useState(null);
 
 	useEffect(() => {
 		loadSchedule();
@@ -78,7 +81,10 @@ function ClassroomPage() {
 			setDescription("");
 			loadSchedule();
 		} catch {
-			alert("Reservation failed");
+			setFeedbackModal({
+				title: "Reservation Failed",
+				message: "Failed to create reservation. Please try again."
+			});
 		}
 	};
 
@@ -88,7 +94,10 @@ function ClassroomPage() {
 			setModal(null);
 			loadSchedule();
 		} catch {
-			alert("Cancel failed");
+			setFeedbackModal({
+				title: "Cancellation Failed",
+				message: "Failed to cancel reservation."
+			});
 		}
 	};
 
@@ -98,7 +107,10 @@ function ClassroomPage() {
 			setModal(null);
 			loadSchedule();
 		} catch {
-			alert("Subscribe failed");
+			setFeedbackModal({
+				title: "Subscription Failed",
+				message: "Failed to join classroom."
+			});
 		}
 	};
 
@@ -108,7 +120,10 @@ function ClassroomPage() {
 			setModal(null);
 			loadSchedule();
 		} catch {
-			alert("Unsubscribe failed");
+			setFeedbackModal({
+				title: "Leave Failed",
+				message: "Failed to leave classroom."
+			});
 		}
 	};
 
@@ -390,6 +405,17 @@ function ClassroomPage() {
 				)}
 
 			</div>
+
+			<DeleteConfirmModal
+				isOpen={!!feedbackModal}
+				title={feedbackModal?.title}
+				message={feedbackModal?.message}
+				confirmText="OK"
+				hideCancelButton={true}
+				onCancel={() => setFeedbackModal(null)}
+				onConfirm={() => setFeedbackModal(null)}
+			/>
+
 		</>
 	);
 }
