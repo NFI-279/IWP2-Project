@@ -4,9 +4,11 @@ import { getClassrooms } from "../../api/classroomApi";
 import {
 	createClassroom,
 	updateClassroomCoordinates,
-	deleteClassroom
+	deleteClassroom,
+	updateClassroom
 } from "../../api/adminApi";
 import { getFloor } from "../../api/floorApi";
+import DeleteConfirmModal from "../../components/DeleteConfirmModal";
 
 function AdminLayoutEditorPage() {
 
@@ -28,6 +30,9 @@ function AdminLayoutEditorPage() {
 
 	const [roomName, setRoomName] = useState("");
 	const [capacity, setCapacity] = useState("");
+	const [selectedRoom, setSelectedRoom] = useState(null);
+
+	const [errorModal, setErrorModal] = useState(null);
 
 	useEffect(() => {
 		loadFloor();
@@ -168,7 +173,10 @@ function AdminLayoutEditorPage() {
 		};
 
 		if (!insideBounds(newRoom)) {
-			alert("Classroom must stay inside the floor image");
+			setErrorModal({
+				title: "Invalid Classroom Placement",
+				message: "Classroom must stay inside the floor image."
+			});
 			setDrawing(false);
 			setRect(null);
 			return;
@@ -176,7 +184,10 @@ function AdminLayoutEditorPage() {
 
 		for (const room of classrooms) {
 			if (overlaps(newRoom, room)) {
-				alert("Classroom overlaps with another classroom");
+				setErrorModal({
+					title: "Invalid Classroom Placement",
+					message: "Classroom overlaps with another classroom."
+				});
 				setDrawing(false);
 				setRect(null);
 				return;
@@ -202,8 +213,11 @@ function AdminLayoutEditorPage() {
 
 	const confirmCreateRoom = async () => {
 
-		if (!roomName || !capacity) {
-			alert("All fields required");
+		if (!roomName || !capacity || Number(capacity) < 1) {
+			setErrorModal({
+				title: "Invalid Classroom Data",
+				message: "Capacity must be at least 1."
+			});
 			return;
 		}
 
@@ -223,6 +237,51 @@ function AdminLayoutEditorPage() {
 
 		} catch (err) {
 			console.error("Failed to create classroom", err);
+		}
+	};
+
+	const handleUpdateRoom = async () => {
+
+		if (!roomName || !capacity) {
+			setErrorModal({
+				title: "Missing Information",
+				message: "All fields are required."
+			});
+			return;
+		}
+
+		try {
+
+			await updateClassroom(selectedRoom.id, {
+				name: roomName,
+				capacity: Number(capacity)
+			});
+
+			setModal(null);
+			setSelectedRoom(null);
+
+			loadClassrooms();
+
+		} catch (err) {
+			console.error("Failed to update classroom", err);
+		}
+	};
+
+	const handleDeleteRoom = async () => {
+
+		if (!selectedRoom) return;
+
+		try {
+
+			await deleteClassroom(selectedRoom.id);
+
+			setModal(null);
+			setSelectedRoom(null);
+
+			loadClassrooms();
+
+		} catch (err) {
+			console.error("Failed to delete classroom", err);
 		}
 	};
 
@@ -266,12 +325,14 @@ function AdminLayoutEditorPage() {
 						<div
 							key={room.id}
 							onMouseDown={(e) => handleRoomMouseDown(e, room)}
-							onContextMenu={async (e) => {
+							onContextMenu={(e) => {
 								e.preventDefault();
-								if (!window.confirm("Delete classroom?")) return;
 
-								await deleteClassroom(room.id);
-								loadClassrooms();
+								setSelectedRoom(room);
+								setRoomName(room.name);
+								setCapacity(room.capacity);
+
+								setModal({ type: "edit-room" });
 							}}
 							className="absolute border-2 border-red-500 cursor-move hover:bg-red-200/30"
 							style={{
@@ -356,6 +417,75 @@ function AdminLayoutEditorPage() {
 
 				</div>
 			)}
+
+			{modal?.type === "edit-room" && (
+				<div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+
+					<div className="bg-white rounded-xl shadow-2xl w-full max-w-md p-6 border border-gray-200">
+
+						<div className="flex justify-between items-center mb-6">
+							<h2 className="text-xl font-bold">Edit Classroom</h2>
+
+							<button
+								onClick={() => setModal(null)}
+								className="w-8 h-8 rounded-full hover:bg-gray-100 flex items-center justify-center"
+							>
+								✕
+							</button>
+						</div>
+
+						<div className="flex flex-col gap-4">
+
+							<input
+								placeholder="Classroom name"
+								value={roomName}
+								onChange={(e) => setRoomName(e.target.value)}
+								className="w-full border border-gray-300 rounded-md px-4 py-3 focus:outline-none focus:ring-2 focus:ring-red-400"
+							/>
+
+							<input
+								type="number"
+								placeholder="Capacity"
+								value={capacity}
+								onChange={(e) => setCapacity(e.target.value)}
+								className="w-full border border-gray-300 rounded-md px-4 py-3 focus:outline-none focus:ring-2 focus:ring-red-400"
+							/>
+
+							<div className="flex gap-3 mt-2">
+
+								<button
+									onClick={handleUpdateRoom}
+									className="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-800 py-3 rounded-md font-semibold"
+								>
+									Save
+								</button>
+
+								<button
+									onClick={handleDeleteRoom}
+									className="flex-1 bg-red-500 hover:bg-red-600 text-white py-3 rounded-md font-semibold shadow-md"
+								>
+									Delete
+								</button>
+
+							</div>
+
+						</div>
+
+					</div>
+
+				</div>
+			)}
+
+			{/* MODAL */}
+			<DeleteConfirmModal
+				isOpen={!!errorModal}
+				title={errorModal?.title}
+				message={errorModal?.message}
+				confirmText="OK"
+				hideCancelButton={true}
+				onCancel={() => setErrorModal(null)}
+				onConfirm={() => setErrorModal(null)}
+			/>
 
 		</div>
 	);

@@ -44,8 +44,12 @@ function LoginPage() {
 
 		try {
 
-			await login(email, password);
-			navigate("/");
+			const loggedUser = await login(email, password);
+			if (loggedUser.role === "ADMIN") {
+				navigate("/admin/building");
+			} else {
+				navigate("/");
+			}
 
 		} catch {
 

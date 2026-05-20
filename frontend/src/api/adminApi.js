@@ -49,3 +49,8 @@ export async function updateClassroomCoordinates(id, coords) {
   const res = await api.put(`/admin/classrooms/${id}/coordinates`, coords);
   return res.data;
 }
+
+export async function updateClassroom(id, data) {
+  const res = await api.put(`/admin/classrooms/${id}`, data);
+  return res.data;
+}

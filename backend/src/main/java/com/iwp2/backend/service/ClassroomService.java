@@ -31,6 +31,10 @@ public class ClassroomService {
 
 		classroom.setFloor(floor);
 
+		if (classroom.getCapacity() == null || classroom.getCapacity() < 1) {
+			throw new RuntimeException("Capacity must be at least 1");
+		}
+
 		return classroomRepository.save(classroom);
 	}
 
@@ -52,6 +56,24 @@ public class ClassroomService {
 		classroom.setTopLeftY(topLeftY);
 		classroom.setBottomRightX(bottomRightX);
 		classroom.setBottomRightY(bottomRightY);
+
+		return classroomRepository.save(classroom);
+	}
+
+	public Classroom updateClassroom(
+			Long id,
+			String name,
+			Integer capacity) {
+
+		Classroom classroom = classroomRepository.findById(id)
+				.orElseThrow(() -> new RuntimeException("Classroom not found"));
+
+		if (capacity == null || capacity < 1) {
+			throw new RuntimeException("Capacity must be at least 1");
+		}
+
+		classroom.setName(name);
+		classroom.setCapacity(capacity);
 
 		return classroomRepository.save(classroom);
 	}

@@ -4,7 +4,8 @@ function DeleteConfirmModal({
 	message,
 	onCancel,
 	onConfirm,
-	confirmText = "Delete"
+	confirmText = "Delete",
+	hideCancelButton = false
 }) {
 
 	if (!isOpen) return null;
@@ -41,12 +42,14 @@ function DeleteConfirmModal({
 				{/* Actions */}
 				<div className="flex gap-3">
 
-					<button
-						onClick={onCancel}
-						className="flex-1 py-3 rounded-xl bg-gray-100 text-gray-700 font-semibold hover:bg-gray-200 transition"
-					>
-						Cancel
-					</button>
+					{!hideCancelButton && (
+						<button
+							onClick={onCancel}
+							className="flex-1 py-3 rounded-xl bg-gray-100 text-gray-700 font-semibold hover:bg-gray-200 transition"
+						>
+							Cancel
+						</button>
+					)}
 
 					<button
 						onClick={onConfirm}

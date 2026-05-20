@@ -5,6 +5,7 @@ import com.iwp2.backend.service.ClassroomService;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import com.iwp2.backend.dto.ClassroomCoordinates;
+import com.iwp2.backend.dto.UpdateClassroomRequest;
 
 @RestController
 @RequestMapping("/admin/classrooms")
@@ -40,4 +41,16 @@ public class AdminClassroomController {
 				dto.getBottomRightX(),
 				dto.getBottomRightY());
 	}
+
+	@PutMapping("/{id}")
+	public Classroom update(
+			@PathVariable Long id,
+			@RequestBody UpdateClassroomRequest dto) {
+
+		return classroomService.updateClassroom(
+				id,
+				dto.getName(),
+				dto.getCapacity());
+	}
+
 }
