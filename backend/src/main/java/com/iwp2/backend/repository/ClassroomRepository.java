@@ -7,5 +7,7 @@ import java.util.List;
 
 public interface ClassroomRepository extends JpaRepository<Classroom, Long> {
 
-    List<Classroom> findByFloorId(Long floorId);
+	List<Classroom> findByFloorId(Long floorId);
+
+	List<Classroom> findTop3ByOrderByCreatedAtDesc();
 }

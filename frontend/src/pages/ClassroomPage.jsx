@@ -17,6 +17,18 @@ const slotTimes = {
 	6: "18:00 - 20:00"
 };
 
+function getCurrentWeekNumber() {
+	const date = new Date();
+	const target = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
+
+	const dayNumber = target.getUTCDay() || 7;
+	target.setUTCDate(target.getUTCDate() + 4 - dayNumber);
+
+	const yearStart = new Date(Date.UTC(target.getUTCFullYear(), 0, 1));
+
+	return Math.ceil((((target - yearStart) / 86400000) + 1) / 7);
+}
+
 function ClassroomPage() {
 
 	const { classroomId } = useParams();
@@ -24,7 +36,7 @@ function ClassroomPage() {
 	const { user } = useAuth();
 
 	const [schedule, setSchedule] = useState({});
-	const [week, setWeek] = useState(10);
+	const [week, setWeek] = useState(getCurrentWeekNumber);
 	const [modal, setModal] = useState(null);
 
 	const [courseName, setCourseName] = useState("");
@@ -56,7 +68,7 @@ function ClassroomPage() {
 
 	const handleClick = (day, slot, cell) => {
 		const reserved = cell?.reserved === true;
-		const isMine = reserved && cell?.teacherName === user?.email;
+		const isMine = reserved && cell?.teacherName === user?.name;
 
 		if (!reserved) {
 			setModal({ type: "book", day, slot });
@@ -188,7 +200,7 @@ function ClassroomPage() {
 
 									const cell = getSlot(day, slot);
 									const reserved = cell?.reserved === true;
-									const isMine = reserved && cell?.teacherName === user?.email;
+									const isMine = reserved && cell?.teacherName === user?.name;
 
 									let classes = "h-24 rounded-xl flex items-center justify-center transition";
 

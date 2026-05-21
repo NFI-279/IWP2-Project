@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import { getMySubscriptions, unsubscribeFromReservation } from "../api/reservationApi";
 import { useAuth } from "../context/AuthContext";
+import DeleteConfirmModal from "../components/DeleteConfirmModal";
 
 const slotTimes = {
 	1: "08:00–10:00",
@@ -21,6 +22,9 @@ function MySubscriptionsPage() {
 
 	const [subscriptions, setSubscriptions] = useState([]);
 
+	const [showLeaveModal, setShowLeaveModal] = useState(false);
+	const [reservationToLeave, setReservationToLeave] = useState(null);
+
 	useEffect(() => {
 		loadSubscriptions();
 	}, [user]);
@@ -36,15 +40,20 @@ function MySubscriptionsPage() {
 		}
 	};
 
-	const handleLeave = async (reservationId) => {
-		const confirmLeave = window.confirm("Leave this class?");
-		if (!confirmLeave) return;
+	const handleLeave = (reservationId) => {
+		setReservationToLeave(reservationId);
+		setShowLeaveModal(true);
+	};
 
+	const confirmLeave = async () => {
 		try {
-			await unsubscribeFromReservation(reservationId, user.id);
+			await unsubscribeFromReservation(reservationToLeave, user.id);
 			loadSubscriptions();
 		} catch (err) {
 			console.error("Leave failed", err);
+		} finally {
+			setShowLeaveModal(false);
+			setReservationToLeave(null);
 		}
 	};
 
@@ -142,6 +151,21 @@ function MySubscriptionsPage() {
 				</div>
 
 			</div>
+
+			<DeleteConfirmModal
+				isOpen={showLeaveModal}
+				title="Leave Class"
+				message="Are you sure you want to leave this class?
+
+			You will lose your reserved spot for this session."
+				confirmText="Leave Class"
+				onCancel={() => {
+					setShowLeaveModal(false);
+					setReservationToLeave(null);
+				}}
+				onConfirm={confirmLeave}
+			/>
+
 		</>
 	);
 

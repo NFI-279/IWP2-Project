@@ -15,7 +15,8 @@ CREATE TABLE users (
 CREATE TABLE buildings (
   id SERIAL PRIMARY KEY,
   name VARCHAR(100) UNIQUE NOT NULL,
-  image_path VARCHAR(255)
+  image_path VARCHAR(255),
+  created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
 CREATE TABLE floors (
@@ -36,6 +37,8 @@ CREATE TABLE classrooms (
   top_left_y DOUBLE PRECISION NOT NULL,
   bottom_right_x DOUBLE PRECISION NOT NULL,
   bottom_right_y DOUBLE PRECISION NOT NULL,
+  
+  created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
   UNIQUE (name, floor_id)
 );

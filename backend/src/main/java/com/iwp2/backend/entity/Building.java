@@ -3,7 +3,7 @@ package com.iwp2.backend.entity;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
-
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
@@ -22,6 +22,14 @@ public class Building {
 	@Column(name = "image_path")
 	private String imagePath;
 
+	@Column(name = "created_at")
+	private LocalDateTime createdAt;
+
 	@OneToMany(mappedBy = "building", cascade = CascadeType.ALL)
 	private List<Floor> floors;
+
+	@PrePersist
+	public void prePersist() {
+		createdAt = LocalDateTime.now();
+	}
 }

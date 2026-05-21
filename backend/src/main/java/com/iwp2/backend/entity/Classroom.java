@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.Setter;
 import java.util.List;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "classrooms")
@@ -39,7 +40,15 @@ public class Classroom {
 	@Column(name = "bottom_right_y", nullable = false)
 	private Double bottomRightY;
 
+	@Column(name = "created_at")
+	private LocalDateTime createdAt;
+
 	@OneToMany(mappedBy = "classroom", cascade = CascadeType.ALL, orphanRemoval = true)
 	@JsonIgnore
 	private List<Reservation> reservations;
+
+	@PrePersist
+	public void prePersist() {
+		createdAt = LocalDateTime.now();
+	}
 }

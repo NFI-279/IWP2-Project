@@ -22,6 +22,12 @@ public class ProfileService {
 	private final FloorRepository floorRepository;
 	private final ClassroomRepository classroomRepository;
 
+	private int getCurrentWeekNumber() {
+		java.time.LocalDate date = java.time.LocalDate.now();
+		return date.get(
+				java.time.temporal.IsoFields.WEEK_OF_WEEK_BASED_YEAR);
+	}
+
 	public ProfileService(
 			UserRepository userRepository,
 			ReservationRepository reservationRepository,
@@ -52,9 +58,11 @@ public class ProfileService {
 		if (role.equals("STUDENT")) {
 
 			List<ReservationSubscription> subscriptions = subscriptionRepository.findByStudentId(user.getId());
-
 			int joinedClasses = subscriptions.size();
-			int upcomingClasses = subscriptions.size();
+			int currentWeek = getCurrentWeekNumber();
+			int upcomingClasses = (int) subscriptions.stream()
+					.filter(sub -> sub.getReservation().getWeekNumber() >= currentWeek)
+					.count();
 			int totalHours = joinedClasses * 2;
 
 			stats.add(new ProfileStat("Joined Classes", joinedClasses));
@@ -80,15 +88,15 @@ public class ProfileService {
 		else if (role.equals("TEACHER")) {
 
 			List<Reservation> reservations = reservationRepository.findByTeacher_Email(email);
-
 			int reservationCount = reservations.size();
-
 			int totalStudents = reservations.stream()
 					.mapToInt(r -> subscriptionRepository
 							.countByReservationId(r.getId()))
 					.sum();
-
-			int upcomingSessions = reservationCount;
+			int currentWeek = getCurrentWeekNumber();
+			int upcomingSessions = (int) reservations.stream()
+					.filter(r -> r.getWeekNumber() >= currentWeek)
+					.count();
 
 			stats.add(new ProfileStat(
 					"Reservations Created",
@@ -129,9 +137,37 @@ public class ProfileService {
 					"Classrooms",
 					(int) classroomRepository.count()));
 
-			activity.add("Managing campus infrastructure");
-			activity.add("Monitoring classroom system");
-			activity.add("Managing platform resources");
+			buildingRepository.findTop3ByOrderByCreatedAtDesc()
+					.forEach(building -> {
+
+						activity.add(
+								"Added building " +
+										building.getName());
+					});
+
+			floorRepository.findTop3ByOrderByCreatedAtDesc()
+					.forEach(floor -> {
+
+						activity.add(
+								"Added floor " +
+										floor.getName() +
+										" to " +
+										floor.getBuilding().getName());
+					});
+
+			classroomRepository.findTop3ByOrderByCreatedAtDesc()
+					.forEach(classroom -> {
+
+						activity.add(
+								"Added classroom " +
+										classroom.getName() +
+										" on " +
+										classroom.getFloor().getName() +
+										" in " +
+										classroom.getFloor()
+												.getBuilding()
+												.getName());
+					});
 		}
 
 		return new ProfileDashboardResponse(stats, activity);

@@ -7,5 +7,7 @@ import java.util.List;
 
 public interface FloorRepository extends JpaRepository<Floor, Long> {
 
-    List<Floor> findByBuildingId(Long buildingId);
+	List<Floor> findByBuildingId(Long buildingId);
+
+	List<Floor> findTop3ByOrderByCreatedAtDesc();
 }
